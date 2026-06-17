@@ -68,6 +68,9 @@
 
     * { box-sizing: border-box; }
 
+    /* Prevent horizontal overflow on all screens */
+    html, body { overflow-x: hidden; }
+
     html { scroll-behavior: smooth; }
 
     @media (prefers-reduced-motion: reduce) {
@@ -101,21 +104,24 @@
       will-change: transform;
     }
 
+    /* Elements start hidden; GSAP or CSS fallback reveals them */
     .reveal {
       opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
+    /* CSS-only fallback (when GSAP is unavailable or motion reduced) */
     .reveal.visible {
       opacity: 1;
+      transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
       transform: translateY(0);
     }
+    .reveal-delay-1.visible { transition-delay: 0.1s; }
+    .reveal-delay-2.visible { transition-delay: 0.2s; }
+    .reveal-delay-3.visible { transition-delay: 0.3s; }
+    .reveal-delay-4.visible { transition-delay: 0.4s; }
 
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
+    /* Clip reveal elements until GSAP initialises to avoid layout shift */
+    .reveal-clip { overflow: hidden; }
 
     .menu-card {
       transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
@@ -334,6 +340,13 @@
     .dark .section-heading {
       color: #F5F0E6;
     }
+
+    /* Hero text legibility — deep multi-layer shadow for contrast over photo */
+    .hero-text {
+      text-shadow:
+        0 2px 20px rgba(8, 12, 4, 0.80),
+        0 1px 5px  rgba(8, 12, 4, 0.55);
+    }
   </style>
 </head>
 
@@ -409,8 +422,9 @@
             fetchpriority="high"
           />
         </div>
-        <div class="absolute inset-0 bg-gradient-to-b from-olive-deep/60 via-olive-deep/45 to-olive-dark/80 dark:from-[#1E2418]/70 dark:via-[#1E2418]/55 dark:to-[#1E2418]/90"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(30,36,24,0.4)_100%)]"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-olive-deep/55 via-olive-deep/72 to-olive-dark/88 dark:from-[#1E2418]/65 dark:via-[#1E2418]/78 dark:to-[#1E2418]/93"></div>
+        <!-- Radial scrim centred on the text block for extra contrast -->
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_85%_65%_at_50%_62%,rgba(8,12,4,0.48)_0%,transparent_100%)]"></div>
       </div>
 
       <!-- Botanical accents -->
@@ -440,23 +454,23 @@
           <img src="logo.jpeg" alt="" class="w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-full object-cover ring-2 ring-cream-light/30 shadow-2xl mb-8" width="128" height="128" aria-hidden="true" />
         </div>
 
-        <p class="animate-fade-up opacity-0 text-cream-light/80 text-xs sm:text-sm tracking-[0.4em] uppercase mb-4 font-body font-light" style="animation-delay: 0.4s; animation-fill-mode: forwards;">
+        <p class="hero-text animate-fade-up opacity-0 text-cream-light/95 text-xs sm:text-sm tracking-[0.4em] uppercase mb-4 font-body font-light" style="animation-delay: 0.4s; animation-fill-mode: forwards;">
           Bulawayo, Zimbabwe
         </p>
 
-        <h1 class="animate-fade-up opacity-0 font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-cream-light tracking-[0.08em] mb-6 leading-none" style="animation-delay: 0.55s; animation-fill-mode: forwards;">
+        <h1 class="hero-text animate-fade-up opacity-0 font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-cream-light tracking-[0.08em] mb-6 leading-none" style="animation-delay: 0.55s; animation-fill-mode: forwards;">
           K&#333;ri Studio
         </h1>
 
         <div class="animate-fade-up opacity-0 flex items-center justify-center gap-4 mb-10" style="animation-delay: 0.7s; animation-fill-mode: forwards;">
-          <span class="h-px w-12 sm:w-20 bg-cream-light/40"></span>
-          <p class="font-body text-sm sm:text-base tracking-[0.35em] uppercase text-cream-light/90 font-light">
+          <span class="h-px w-12 sm:w-20 bg-cream-light/60"></span>
+          <p class="hero-text font-body text-sm sm:text-base tracking-[0.35em] uppercase text-cream-light font-light">
             Eat &bull; Breathe &bull; Create
           </p>
-          <span class="h-px w-12 sm:w-20 bg-cream-light/40"></span>
+          <span class="h-px w-12 sm:w-20 bg-cream-light/60"></span>
         </div>
 
-        <p class="animate-fade-up opacity-0 text-cream-light/75 text-base sm:text-lg max-w-xl mx-auto mb-12 font-light leading-relaxed" style="animation-delay: 0.85s; animation-fill-mode: forwards;">
+        <p class="hero-text animate-fade-up opacity-0 text-cream-light/90 text-base sm:text-lg max-w-xl mx-auto mb-12 font-light leading-relaxed" style="animation-delay: 0.85s; animation-fill-mode: forwards;">
           A calm creative sanctuary where art, nature, and nourishment come together under the open sky.
         </p>
 
@@ -464,13 +478,13 @@
           <a href="#menu" class="btn-primary w-full sm:w-auto px-10 py-4 bg-cream-light text-olive-deep text-xs tracking-[0.2em] uppercase font-medium rounded-sm hover:bg-cream transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
             View Menu
           </a>
-          <a href="#visit" class="btn-primary w-full sm:w-auto px-10 py-4 border border-cream-light/50 text-cream-light text-xs tracking-[0.2em] uppercase font-medium rounded-sm hover:bg-cream-light/10 transition-all duration-300 hover:-translate-y-0.5">
+          <a href="#visit" class="hero-text btn-primary w-full sm:w-auto px-10 py-4 border border-cream-light/70 text-cream-light text-xs tracking-[0.2em] uppercase font-medium rounded-sm hover:bg-cream-light/15 transition-all duration-300 hover:-translate-y-0.5">
             Reserve a Table
           </a>
         </div>
       </div>
 
-      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block" aria-hidden="true">
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" aria-hidden="true">
         <svg class="w-5 h-5 text-cream-light/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 14l-7 7m0 0l-7-7"/>
         </svg>
@@ -759,7 +773,7 @@
 
           <div class="reveal reveal-delay-2 relative">
             <div class="grid grid-cols-2 gap-4">
-              <div class="space-y-4 mt-8">
+              <div class="space-y-4 sm:mt-8">
                 <div class="overflow-hidden rounded-sm shadow-xl aspect-square">
                   <img src="WhatsApp Image 2026-06-17 at 21.13.45.jpeg" alt="Outdoor dining under canvas tent with warm pendant lighting at Kori Studio" class="w-full h-full object-cover" loading="lazy" />
                 </div>
@@ -916,13 +930,19 @@
     </div>
   </footer>
 
+  <!-- GSAP + ScrollTrigger for scroll animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
   <script>
     (function () {
       'use strict';
 
-      // Theme toggle
-      const themeToggle = document.getElementById('theme-toggle');
       const html = document.documentElement;
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ── Theme toggle ──────────────────────────────────────────────────────
+      const themeToggle = document.getElementById('theme-toggle');
 
       function setTheme(dark) {
         html.classList.toggle('dark', dark);
@@ -931,19 +951,16 @@
 
       const savedTheme = localStorage.getItem('kori-theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-        setTheme(true);
-      }
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) setTheme(true);
 
       themeToggle.addEventListener('click', () => {
         setTheme(!html.classList.contains('dark'));
         onScroll();
       });
 
-      // Mobile menu
+      // ── Mobile menu ───────────────────────────────────────────────────────
       const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      const mobileMenu = document.getElementById('mobile-menu');
+      const mobileMenu    = document.getElementById('mobile-menu');
 
       mobileMenuBtn.addEventListener('click', () => {
         const isOpen = !mobileMenu.classList.contains('hidden');
@@ -958,15 +975,11 @@
         });
       });
 
-      // Header scroll effect
+      // ── Header scroll effect ──────────────────────────────────────────────
       const header = document.getElementById('site-header');
 
       function onScroll() {
-        const scrollY = window.scrollY;
-        const heroHeight = document.getElementById('hero').offsetHeight;
-        const headerOffset = 80;
-
-        if (scrollY > headerOffset) {
+        if (window.scrollY > 80) {
           header.classList.add('nav-scrolled');
           header.classList.remove('nav-over-hero');
         } else {
@@ -978,55 +991,167 @@
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
 
-      // Hero parallax
-      const heroBg = document.getElementById('hero-bg');
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // ── Smooth anchor scroll with header offset ───────────────────────────
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+          const id = anchor.getAttribute('href');
+          if (id === '#') return;
+          const target = document.querySelector(id);
+          if (!target) return;
+          e.preventDefault();
+          const top = target.getBoundingClientRect().top + window.scrollY - header.offsetHeight;
+          window.scrollTo({ top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+        });
+      });
 
+      // ── Hero parallax (native, fast path) ────────────────────────────────
+      const heroBg = document.getElementById('hero-bg');
       if (heroBg && !prefersReducedMotion) {
         window.addEventListener('scroll', () => {
-          const scrollY = window.scrollY;
-          const heroHeight = document.getElementById('hero').offsetHeight;
-          if (scrollY < heroHeight) {
-            heroBg.style.transform = `translateY(${scrollY * 0.35}px) scale(1.1)`;
+          const heroH = document.getElementById('hero').offsetHeight;
+          if (window.scrollY < heroH) {
+            heroBg.style.transform = `translateY(${window.scrollY * 0.35}px) scale(1.1)`;
           }
         }, { passive: true });
       }
 
-      // Scroll reveal
-      const revealElements = document.querySelectorAll('.reveal');
+      // ── GSAP Scroll Animations ────────────────────────────────────────────
+      if (typeof gsap !== 'undefined' && !prefersReducedMotion) {
+        gsap.registerPlugin(ScrollTrigger);
 
-      if ('IntersectionObserver' in window) {
-        const revealObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach(entry => {
+        const ease = 'power3.out';
+
+        // Helpers
+        function fromLeft(el, trigger, delay = 0) {
+          gsap.fromTo(el,
+            { opacity: 0, x: -64, y: 0 },
+            { opacity: 1, x: 0, duration: 1.1, ease, delay,
+              scrollTrigger: { trigger, start: 'top 78%', once: true } });
+        }
+
+        function fromRight(el, trigger, delay = 0) {
+          gsap.fromTo(el,
+            { opacity: 0, x: 64, y: 0 },
+            { opacity: 1, x: 0, duration: 1.1, ease, delay,
+              scrollTrigger: { trigger, start: 'top 78%', once: true } });
+        }
+
+        function fadeUp(el, trigger, delay = 0) {
+          gsap.fromTo(el,
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 0.9, ease, delay,
+              scrollTrigger: { trigger, start: 'top 80%', once: true } });
+        }
+
+        function imgParallax(img, trigger, yPercent = -12) {
+          gsap.to(img, {
+            yPercent,
+            ease: 'none',
+            scrollTrigger: { trigger, start: 'top bottom', end: 'bottom top', scrub: 1.5 }
+          });
+        }
+
+        // ── About ─────────────────────────────────────────────────────────
+        const aboutSection  = document.getElementById('about');
+        const aboutGrid     = aboutSection.querySelector('.max-w-7xl .grid');
+        const aboutTextCol  = aboutGrid.firstElementChild;
+        const aboutImgCol   = aboutGrid.lastElementChild;
+
+        fromLeft(aboutTextCol, aboutSection);
+        fromRight(aboutImgCol, aboutSection, 0.2);
+        imgParallax(aboutImgCol.querySelector('img'), aboutSection, -10);
+
+        // Floating "Est. 2024" card pops in after image
+        const estCard = aboutImgCol.querySelector('.absolute.-bottom-6');
+        if (estCard) {
+          gsap.fromTo(estCard,
+            { opacity: 0, scale: 0.8, y: 20 },
+            { opacity: 1, scale: 1, y: 0, duration: 0.7, ease: 'back.out(1.6)', delay: 0.5,
+              scrollTrigger: { trigger: aboutSection, start: 'top 78%', once: true } });
+        }
+
+        // ── Menu ──────────────────────────────────────────────────────────
+        const menuSection = document.getElementById('menu');
+        fadeUp(menuSection.querySelector('.text-center'), menuSection);
+
+        const menuCards = menuSection.querySelectorAll('.menu-card');
+        gsap.fromTo(menuCards,
+          { opacity: 0, y: 56 },
+          { opacity: 1, y: 0, duration: 0.85, ease, stagger: 0.1,
+            scrollTrigger: { trigger: menuSection.querySelector('.grid'), start: 'top 82%', once: true } });
+
+        // Subtle parallax on featured slider image
+        const featuredImg = menuSection.querySelector('.menu-card img');
+        if (featuredImg) imgParallax(featuredImg, menuSection.querySelector('.menu-card'), -8);
+
+        // ── Gallery ───────────────────────────────────────────────────────
+        const gallerySection = document.getElementById('gallery');
+        fadeUp(gallerySection.querySelector('.text-center'), gallerySection);
+
+        const galleryItems = gallerySection.querySelectorAll('.gallery-item');
+        gsap.fromTo(galleryItems,
+          { opacity: 0, scale: 0.87 },
+          { opacity: 1, scale: 1, duration: 0.85, ease: 'power2.out', stagger: 0.07,
+            scrollTrigger: { trigger: gallerySection.querySelector('.grid'), start: 'top 82%', once: true } });
+
+        // Soft parallax on each gallery image
+        galleryItems.forEach(item => {
+          const img = item.querySelector('img');
+          if (img) imgParallax(img, item, -8);
+        });
+
+        // ── Art & Creativity ──────────────────────────────────────────────
+        const artSection  = document.getElementById('art');
+        const artGrid     = artSection.querySelector('.max-w-7xl .grid');
+        const artTextCol  = artGrid.firstElementChild;
+        const artImgCol   = artGrid.lastElementChild;
+
+        fromLeft(artTextCol, artSection);
+        fromRight(artImgCol, artSection, 0.25);
+
+        // Stagger the 3 feature boxes with a spring bounce
+        const artBoxes = artSection.querySelectorAll('.grid.sm\\:grid-cols-3 > div');
+        gsap.fromTo(artBoxes,
+          { opacity: 0, y: 32, scale: 0.93 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'back.out(1.3)', stagger: 0.13,
+            scrollTrigger: { trigger: artBoxes[0] ? artBoxes[0].parentElement : artSection, start: 'top 85%', once: true } });
+
+        // ── Visit ─────────────────────────────────────────────────────────
+        const visitSection  = document.getElementById('visit');
+        const visitGrid     = visitSection.querySelector('.grid.lg\\:grid-cols-2');
+        fadeUp(visitSection.querySelector('.text-center'), visitSection);
+        fromLeft(visitGrid ? visitGrid.firstElementChild : visitSection, visitSection, 0.15);
+
+        gsap.fromTo(visitGrid ? visitGrid.lastElementChild : [],
+          { opacity: 0, scale: 0.95 },
+          { opacity: 1, scale: 1, duration: 1, ease, delay: 0.35,
+            scrollTrigger: { trigger: visitSection, start: 'top 78%', once: true } });
+
+        // ── Footer ────────────────────────────────────────────────────────
+        gsap.fromTo('footer .grid > *',
+          { opacity: 0, y: 32 },
+          { opacity: 1, y: 0, duration: 0.8, ease, stagger: 0.1,
+            scrollTrigger: { trigger: 'footer', start: 'top 88%', once: true } });
+
+      } else {
+        // ── CSS fallback via IntersectionObserver ─────────────────────────
+        const revealEls = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window) {
+          const obs = new IntersectionObserver(
+            entries => entries.forEach(entry => {
               if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
-                revealObserver.unobserve(entry.target);
+                obs.unobserve(entry.target);
               }
-            });
-          },
-          { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-        );
-
-        revealElements.forEach(el => revealObserver.observe(el));
-      } else {
-        revealElements.forEach(el => el.classList.add('visible'));
+            }),
+            { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+          );
+          revealEls.forEach(el => obs.observe(el));
+        } else {
+          revealEls.forEach(el => el.classList.add('visible'));
+        }
       }
 
-      // Smooth anchor scroll offset for fixed header
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', (e) => {
-          const targetId = anchor.getAttribute('href');
-          if (targetId === '#') return;
-          const target = document.querySelector(targetId);
-          if (target) {
-            e.preventDefault();
-            const headerHeight = header.offsetHeight;
-            const top = target.getBoundingClientRect().top + window.scrollY - headerHeight;
-            window.scrollTo({ top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-          }
-        });
-      });
     })();
   </script>
 </body>
