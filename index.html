@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Kori Studio Bulawayo — a calm, artistic cafe & restaurant where art meets nature. Eat • Breathe • Create at 16 Francis Warren, Ilanda." />
+  <meta name="theme-color" content="#4A5F2A" />
+  <meta property="og:title" content="Kori Studio Bulawayo" />
+  <meta property="og:description" content="A creative sanctuary for food, art, and calm. Eat • Breathe • Create." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="logo.jpeg" />
+  <title>Kori Studio Bulawayo — Eat • Breathe • Create</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            olive: { DEFAULT: '#556B2F', deep: '#4A5F2A', dark: '#3A4A22', muted: '#6B7F4A' },
+            cream: { DEFAULT: '#F5F0E6', light: '#FAF6F0', warm: '#EDE6D8' },
+            terracotta: '#C17A4A',
+            gold: '#B8956A',
+          },
+          fontFamily: {
+            display: ['Cinzel', 'Georgia', 'serif'],
+            body: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          animation: {
+            'fade-up': 'fadeUp 1s ease forwards',
+            'fade-in': 'fadeIn 1.2s ease forwards',
+            'float': 'float 6s ease-in-out infinite',
+            'float-slow': 'float 8s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeUp: {
+              '0%': { opacity: '0', transform: 'translateY(32px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    :root {
+      --olive: #556B2F;
+      --olive-deep: #4A5F2A;
+      --cream: #F5F0E6;
+      --cream-light: #FAF6F0;
+      --gold: #B8956A;
+      --terracotta: #C17A4A;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .texture-bg {
+      background-color: var(--cream-light);
+      background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+
+    .dark .texture-bg {
+      background-color: #1E2418;
+      background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    }
+
+    .hero-parallax {
+      will-change: transform;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    .menu-card {
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 48px -12px rgba(74, 95, 42, 0.18);
+    }
+
+    .dark .menu-card:hover {
+      box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.45);
+    }
+
+    .gallery-item img {
+      transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .btn-primary:hover::after {
+      transform: translateX(100%);
+    }
+
+    .leaf-divider {
+      background: linear-gradient(90deg, transparent, var(--olive-deep), transparent);
+      height: 1px;
+      opacity: 0.3;
+    }
+
+    .dark .leaf-divider {
+      opacity: 0.2;
+    }
+
+    ::selection {
+      background: rgba(85, 107, 47, 0.25);
+      color: inherit;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    /* Light-mode text — solid colors for WCAG AA contrast (no opacity wash-out) */
+    .text-body {
+      color: #2F3D1C;
+    }
+
+    .text-body-muted {
+      color: #3A4A22;
+    }
+
+    .text-label {
+      color: #4A5F2A;
+    }
+
+    .dark .text-body {
+      color: rgba(245, 240, 230, 0.92);
+    }
+
+    .dark .text-body-muted {
+      color: rgba(245, 240, 230, 0.78);
+    }
+
+    .dark .text-label {
+      color: #6B7F4A;
+    }
+
+    /* Nav: over hero — light text with shadow for legibility on photos */
+    #site-header.nav-over-hero .nav-brand-text,
+    #site-header.nav-over-hero .nav-link {
+      color: #FAF6F0;
+      text-shadow: 0 1px 3px rgba(30, 36, 24, 0.55);
+    }
+
+    #site-header.nav-over-hero .nav-link:hover {
+      color: #FFFFFF;
+    }
+
+    #site-header.nav-over-hero .nav-cta {
+      background-color: #FAF6F0;
+      color: #2F3D1C;
+      text-shadow: none;
+    }
+
+    #site-header.nav-over-hero .nav-cta:hover {
+      background-color: #FFFFFF;
+    }
+
+    #site-header.nav-over-hero .nav-icon-btn {
+      border-color: rgba(250, 246, 240, 0.45);
+      color: #FAF6F0;
+    }
+
+    #site-header.nav-over-hero .nav-icon-btn:hover {
+      border-color: rgba(250, 246, 240, 0.75);
+    }
+
+    #site-header.nav-over-hero .nav-icon-btn svg {
+      color: #FAF6F0;
+    }
+
+    html.dark #site-header.nav-over-hero .nav-brand-text,
+    html.dark #site-header.nav-over-hero .nav-link {
+      color: #FAF6F0;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+    }
+
+    html.dark #site-header.nav-over-hero .nav-cta {
+      background-color: #FAF6F0;
+      color: #2F3D1C;
+      text-shadow: none;
+    }
+
+    html.dark #site-header.nav-over-hero .nav-icon-btn {
+      border-color: rgba(250, 246, 240, 0.35);
+    }
+
+    html.dark #site-header.nav-over-hero .nav-icon-btn svg {
+      color: #FAF6F0;
+    }
+
+    /* Nav: scrolled — solid high-contrast on cream/dark backgrounds */
+    #site-header.nav-scrolled {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 1px 0 rgba(74, 95, 42, 0.12);
+    }
+
+    html:not(.dark) #site-header.nav-scrolled {
+      background-color: rgba(250, 246, 240, 0.97);
+    }
+
+    html.dark #site-header.nav-scrolled {
+      background-color: rgba(30, 36, 24, 0.97);
+      box-shadow: 0 1px 0 rgba(245, 240, 230, 0.08);
+    }
+
+    html:not(.dark) #site-header.nav-scrolled .nav-brand-text,
+    html:not(.dark) #site-header.nav-scrolled .nav-link {
+      color: #2F3D1C;
+      text-shadow: none;
+    }
+
+    html:not(.dark) #site-header.nav-scrolled .nav-link:hover {
+      color: #4A5F2A;
+    }
+
+    html:not(.dark) #site-header.nav-scrolled .nav-cta {
+      background-color: #4A5F2A;
+      color: #FAF6F0;
+    }
+
+    html:not(.dark) #site-header.nav-scrolled .nav-cta:hover {
+      background-color: #556B2F;
+    }
+
+    html:not(.dark) #site-header.nav-scrolled .nav-icon-btn {
+      border-color: rgba(47, 61, 28, 0.3);
+      color: #2F3D1C;
+    }
+
+    html:not(.dark) #site-header.nav-scrolled .nav-icon-btn svg {
+      color: #2F3D1C;
+    }
+
+    html.dark #site-header.nav-scrolled .nav-brand-text,
+    html.dark #site-header.nav-scrolled .nav-link {
+      color: #F5F0E6;
+      text-shadow: none;
+    }
+
+    html.dark #site-header.nav-scrolled .nav-link:hover {
+      color: #FFFFFF;
+    }
+
+    html.dark #site-header.nav-scrolled .nav-cta {
+      background-color: #FAF6F0;
+      color: #2F3D1C;
+    }
+
+    html.dark #site-header.nav-scrolled .nav-icon-btn {
+      border-color: rgba(245, 240, 230, 0.25);
+      color: #F5F0E6;
+    }
+
+    html.dark #site-header.nav-scrolled .nav-icon-btn svg {
+      color: #F5F0E6;
+    }
+
+    .nav-link {
+      font-weight: 500;
+    }
+
+    .section-heading {
+      color: #2F3D1C;
+    }
+
+    .dark .section-heading {
+      color: #F5F0E6;
+    }
+  </style>
+</head>
+
+<body class="texture-bg text-[#2F3D1C] dark:text-cream-light dark:bg-[#1E2418] transition-colors duration-500">
+
+  <a href="#main" class="skip-link sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-olive-deep focus:text-cream-light focus:rounded-sm focus:outline-none">
+    Skip to main content
+  </a>
+
+  <!-- Navigation -->
+  <header id="site-header" class="nav-over-hero fixed top-0 inset-x-0 z-50 transition-all duration-500">
+    <nav class="max-w-7xl mx-auto px-5 sm:px-8 py-5 flex items-center justify-between" aria-label="Main navigation">
+      <a href="#hero" class="flex items-center gap-3 group" aria-label="Kori Studio — Home">
+        <img src="logo.jpeg" alt="Kori Studio logo" class="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover ring-1 ring-white/30 group-hover:ring-white/50 transition-all duration-300" width="48" height="48" />
+        <span class="nav-brand-text font-display text-sm sm:text-base tracking-[0.25em] uppercase hidden sm:block transition-colors duration-300">Kori Studio</span>
+      </a>
+
+      <div class="hidden lg:flex items-center gap-10">
+        <a href="#about" class="nav-link text-xs tracking-[0.2em] uppercase transition-colors duration-300">About</a>
+        <a href="#menu" class="nav-link text-xs tracking-[0.2em] uppercase transition-colors duration-300">Menu</a>
+        <a href="#gallery" class="nav-link text-xs tracking-[0.2em] uppercase transition-colors duration-300">Gallery</a>
+        <a href="#art" class="nav-link text-xs tracking-[0.2em] uppercase transition-colors duration-300">Art</a>
+        <a href="#visit" class="nav-link text-xs tracking-[0.2em] uppercase transition-colors duration-300">Visit</a>
+      </div>
+
+      <div class="flex items-center gap-3 sm:gap-4">
+        <button id="theme-toggle" type="button" class="nav-icon-btn p-2.5 rounded-full border transition-all duration-300" aria-label="Toggle dark mode">
+          <svg id="icon-sun" class="w-4 h-4 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+          <svg id="icon-moon" class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+          </svg>
+        </button>
+
+        <a href="#menu" class="nav-cta hidden sm:inline-flex btn-primary px-5 py-2.5 text-xs tracking-[0.15em] uppercase font-semibold rounded-sm transition-colors duration-300">
+          View Menu
+        </a>
+
+        <button id="mobile-menu-btn" type="button" class="nav-icon-btn lg:hidden p-2.5 rounded-sm border transition-colors duration-300" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path id="menu-icon-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="lg:hidden hidden border-t border-olive-deep/15 dark:border-cream-light/15 bg-cream-light dark:bg-[#1E2418] backdrop-blur-xl">
+      <div class="max-w-7xl mx-auto px-5 py-8 flex flex-col gap-6">
+        <a href="#about" class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">About</a>
+        <a href="#menu" class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">Menu</a>
+        <a href="#gallery" class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">Gallery</a>
+        <a href="#art" class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">Art & Creativity</a>
+        <a href="#visit" class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">Visit Us</a>
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="text-sm tracking-[0.2em] uppercase font-medium text-terracotta">Instagram</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- Hero -->
+    <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden" aria-label="Welcome">
+      <div class="absolute inset-0 overflow-hidden">
+        <div id="hero-bg" class="hero-parallax absolute inset-0 scale-110">
+          <img
+            src="WhatsApp Image 2026-06-17 at 21.13.45.jpeg"
+            alt="Kori Studio outdoor dining area under a canvas tent with warm pendant lighting"
+            class="w-full h-full object-cover"
+            width="1920"
+            height="1080"
+            fetchpriority="high"
+          />
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-b from-olive-deep/60 via-olive-deep/45 to-olive-dark/80 dark:from-[#1E2418]/70 dark:via-[#1E2418]/55 dark:to-[#1E2418]/90"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(30,36,24,0.4)_100%)]"></div>
+      </div>
+
+      <!-- Botanical accents -->
+      <svg class="absolute top-24 left-8 w-16 h-16 sm:w-24 sm:h-24 text-cream-light/20 animate-float pointer-events-none" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <path d="M32 8C32 8 20 20 20 36C20 46 26 52 32 56C38 52 44 46 44 36C44 20 32 8 32 8Z" stroke="currentColor" stroke-width="0.75"/>
+        <path d="M32 20V48" stroke="currentColor" stroke-width="0.5"/>
+        <path d="M24 28C28 26 32 26 32 26C32 26 36 26 40 28" stroke="currentColor" stroke-width="0.5"/>
+        <path d="M24 36C28 34 32 34 32 34C32 34 36 34 40 36" stroke="currentColor" stroke-width="0.5"/>
+      </svg>
+
+      <svg class="absolute bottom-32 right-8 w-20 h-20 sm:w-28 sm:h-28 text-cream-light/15 animate-float-slow pointer-events-none" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+        <circle cx="40" cy="40" r="28" stroke="currentColor" stroke-width="0.6"/>
+        <path d="M22 48C28 38 34 32 40 30C46 32 52 38 58 48" stroke="currentColor" stroke-width="0.6"/>
+        <path d="M40 30V52" stroke="currentColor" stroke-width="0.5"/>
+        <path d="M34 38L40 30L46 38" stroke="currentColor" stroke-width="0.5"/>
+        <ellipse cx="40" cy="22" rx="6" ry="4" stroke="currentColor" stroke-width="0.5"/>
+      </svg>
+
+      <svg class="absolute top-1/3 right-16 w-12 h-12 text-gold/30 animate-float pointer-events-none hidden md:block" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <path d="M8 32C12 28 16 26 24 26C32 26 36 28 40 32" stroke="currentColor" stroke-width="0.6"/>
+        <path d="M12 28L10 22M36 28L38 22" stroke="currentColor" stroke-width="0.5"/>
+        <path d="M24 26V18" stroke="currentColor" stroke-width="0.5"/>
+      </svg>
+
+      <div class="relative z-10 text-center px-6 max-w-4xl mx-auto pt-20">
+        <div class="animate-fade-in opacity-0" style="animation-delay: 0.2s; animation-fill-mode: forwards;">
+          <img src="logo.jpeg" alt="" class="w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-full object-cover ring-2 ring-cream-light/30 shadow-2xl mb-8" width="128" height="128" aria-hidden="true" />
+        </div>
+
+        <p class="animate-fade-up opacity-0 text-cream-light/80 text-xs sm:text-sm tracking-[0.4em] uppercase mb-4 font-body font-light" style="animation-delay: 0.4s; animation-fill-mode: forwards;">
+          Bulawayo, Zimbabwe
+        </p>
+
+        <h1 class="animate-fade-up opacity-0 font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-cream-light tracking-[0.08em] mb-6 leading-none" style="animation-delay: 0.55s; animation-fill-mode: forwards;">
+          K&#333;ri Studio
+        </h1>
+
+        <div class="animate-fade-up opacity-0 flex items-center justify-center gap-4 mb-10" style="animation-delay: 0.7s; animation-fill-mode: forwards;">
+          <span class="h-px w-12 sm:w-20 bg-cream-light/40"></span>
+          <p class="font-body text-sm sm:text-base tracking-[0.35em] uppercase text-cream-light/90 font-light">
+            Eat &bull; Breathe &bull; Create
+          </p>
+          <span class="h-px w-12 sm:w-20 bg-cream-light/40"></span>
+        </div>
+
+        <p class="animate-fade-up opacity-0 text-cream-light/75 text-base sm:text-lg max-w-xl mx-auto mb-12 font-light leading-relaxed" style="animation-delay: 0.85s; animation-fill-mode: forwards;">
+          A calm creative sanctuary where art, nature, and nourishment come together under the open sky.
+        </p>
+
+        <div class="animate-fade-up opacity-0 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6" style="animation-delay: 1s; animation-fill-mode: forwards;">
+          <a href="#menu" class="btn-primary w-full sm:w-auto px-10 py-4 bg-cream-light text-olive-deep text-xs tracking-[0.2em] uppercase font-medium rounded-sm hover:bg-cream transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+            View Menu
+          </a>
+          <a href="#visit" class="btn-primary w-full sm:w-auto px-10 py-4 border border-cream-light/50 text-cream-light text-xs tracking-[0.2em] uppercase font-medium rounded-sm hover:bg-cream-light/10 transition-all duration-300 hover:-translate-y-0.5">
+            Reserve a Table
+          </a>
+        </div>
+      </div>
+
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block" aria-hidden="true">
+        <svg class="w-5 h-5 text-cream-light/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 14l-7 7m0 0l-7-7"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="py-24 sm:py-32 lg:py-40 px-5 sm:px-8" aria-labelledby="about-heading">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          <div class="reveal">
+            <p class="text-label text-xs tracking-[0.3em] uppercase mb-4 font-semibold">Our Story</p>
+            <h2 id="about-heading" class="section-heading font-display text-3xl sm:text-4xl lg:text-5xl tracking-wide mb-8 leading-tight">
+              A sanctuary for<br /><span class="text-olive-deep dark:text-gold italic font-normal">slow living &amp; creativity</span>
+            </h2>
+            <div class="leaf-divider w-16 mb-8"></div>
+            <div class="space-y-5 text-body-muted leading-relaxed text-base sm:text-lg">
+              <p>
+                Nestled in the leafy suburb of Ilanda, Kori Studio is more than a cafe — it is a breathing space. Named after the graceful Kori bustard, our sanctuary invites you to pause, savour, and create.
+              </p>
+              <p>
+                Under canvas canopies and among garden palms, we serve thoughtfully crafted food in an atmosphere of calm warmth. Every plate is a canvas; every visit, an invitation to reconnect with yourself and your community.
+              </p>
+              <p>
+                Whether you come for morning coffee, a long lunch with friends, or an evening of art and conversation, Kori Studio holds space for you — safe, serene, and beautifully alive.
+              </p>
+            </div>
+          </div>
+
+          <div class="reveal reveal-delay-2 relative">
+            <div class="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden rounded-sm shadow-2xl">
+              <img
+                src="WhatsApp Image 2026-06-17 at 21.11.30 (1).jpeg"
+                alt="Artisan pizza served on wooden board in Kori Studio garden setting with palm trees"
+                class="w-full h-full object-cover"
+                loading="lazy"
+                width="800"
+                height="1000"
+              />
+              <div class="absolute inset-0 ring-1 ring-inset ring-olive-deep/10 dark:ring-cream-light/10"></div>
+            </div>
+            <!-- Floating accent card -->
+            <div class="absolute -bottom-6 -left-4 sm:-left-8 bg-cream-light dark:bg-olive-dark px-6 py-5 shadow-xl rounded-sm border border-olive-deep/5 dark:border-cream-light/5 max-w-[220px]">
+              <p class="font-display text-2xl text-[#2F3D1C] dark:text-cream-light mb-1">Est. 2024</p>
+              <p class="text-label text-xs tracking-[0.15em] uppercase font-medium">Ilanda, Bulawayo</p>
+            </div>
+            <!-- Botanical SVG -->
+            <svg class="absolute -top-6 -right-4 w-20 h-20 text-olive/20 dark:text-gold/20 pointer-events-none" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+              <path d="M40 10C40 10 25 25 25 42C25 54 32 62 40 68C48 62 55 54 55 42C55 25 40 10 40 10Z" stroke="currentColor" stroke-width="0.8"/>
+              <path d="M40 24V62" stroke="currentColor" stroke-width="0.6"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Menu -->
+    <section id="menu" class="py-24 sm:py-32 bg-cream dark:bg-olive-dark/30" aria-labelledby="menu-heading">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8">
+        <div class="text-center mb-16 sm:mb-20 reveal">
+          <p class="text-label text-xs tracking-[0.3em] uppercase mb-4 font-semibold">Seasonal Selection</p>
+          <h2 id="menu-heading" class="section-heading font-display text-3xl sm:text-4xl lg:text-5xl tracking-wide mb-6">Menu Highlights</h2>
+          <div class="leaf-divider w-24 mx-auto mb-6"></div>
+          <p class="text-body-muted max-w-lg mx-auto">
+            Crafted with care from local ingredients. Prices in USD.
+          </p>
+        </div>
+
+        <!-- Bento Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+
+          <!-- Featured: Sliders -->
+          <article class="menu-card reveal lg:col-span-2 lg:row-span-2 bg-cream-light dark:bg-[#252D1C] rounded-sm overflow-hidden shadow-md border border-olive-deep/5 dark:border-cream-light/5 group">
+            <div class="grid md:grid-cols-2 h-full">
+              <div class="relative h-64 md:h-full min-h-[280px] overflow-hidden">
+                <img src="WhatsApp Image 2026-06-17 at 21.11.30.jpeg" alt="Gourmet cheese sliders with sweet potato fries" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+              </div>
+              <div class="p-8 sm:p-10 flex flex-col justify-center">
+                <span class="text-xs tracking-[0.2em] uppercase text-terracotta mb-3">Signature</span>
+                <h3 class="section-heading font-display text-2xl sm:text-3xl mb-4">Kori Sliders</h3>
+                <p class="text-body-muted mb-6 leading-relaxed">Two artisan beef sliders with melted cheddar, house sauce, and crispy sweet potato fries.</p>
+                <p class="font-display text-3xl text-[#2F3D1C] dark:text-gold">$14</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Breakfast -->
+          <article class="menu-card reveal reveal-delay-1 bg-cream-light dark:bg-[#252D1C] rounded-sm overflow-hidden shadow-md border border-olive-deep/5 dark:border-cream-light/5">
+            <div class="relative h-48 overflow-hidden">
+              <img src="WhatsApp Image 2026-06-17 at 21.13.44.jpeg" alt="Banana bread stack with caramelized fruit and crème anglaise" class="w-full h-full object-cover" loading="lazy" />
+            </div>
+            <div class="p-6 sm:p-8">
+              <span class="text-label text-xs tracking-[0.2em] uppercase mb-2 block font-semibold">Breakfast</span>
+              <h3 class="section-heading font-display text-xl mb-2">Banana Bread Stack</h3>
+              <p class="text-sm text-body-muted mb-4">Toasted banana bread, caramelized fruit, vanilla crème anglaise</p>
+              <p class="font-display text-xl text-[#2F3D1C] dark:text-gold">$8</p>
+            </div>
+          </article>
+
+          <!-- Salad -->
+          <article class="menu-card reveal reveal-delay-2 bg-cream-light dark:bg-[#252D1C] rounded-sm overflow-hidden shadow-md border border-olive-deep/5 dark:border-cream-light/5">
+            <div class="relative h-48 overflow-hidden">
+              <img src="WhatsApp Image 2026-06-17 at 21.13.44 (1).jpeg" alt="Mediterranean couscous salad with pomegranate and feta" class="w-full h-full object-cover" loading="lazy" />
+            </div>
+            <div class="p-6 sm:p-8">
+              <span class="text-label text-xs tracking-[0.2em] uppercase mb-2 block font-semibold">Salads</span>
+              <h3 class="section-heading font-display text-xl mb-2">Couscous Garden Bowl</h3>
+              <p class="text-sm text-body-muted mb-4">Roasted butternut, pomegranate, feta, fresh herbs</p>
+              <p class="font-display text-xl text-[#2F3D1C] dark:text-gold">$10</p>
+            </div>
+          </article>
+
+          <!-- Pizza -->
+          <article class="menu-card reveal reveal-delay-1 bg-cream-light dark:bg-[#252D1C] rounded-sm overflow-hidden shadow-md border border-olive-deep/5 dark:border-cream-light/5">
+            <div class="p-6 sm:p-8">
+              <span class="text-label text-xs tracking-[0.2em] uppercase mb-2 block font-semibold">Mains</span>
+              <h3 class="section-heading font-display text-xl mb-2">Shredded Chicken Pizza</h3>
+              <p class="text-sm text-body-muted mb-4">Wood-fired style, tomato base, mozzarella, seasoned chicken</p>
+              <p class="font-display text-xl text-[#2F3D1C] dark:text-gold">$12</p>
+            </div>
+          </article>
+
+          <!-- Drinks -->
+          <article class="menu-card reveal reveal-delay-2 bg-cream-light dark:bg-[#252D1C] rounded-sm p-6 sm:p-8 shadow-md border border-olive-deep/5 dark:border-cream-light/5">
+            <span class="text-label text-xs tracking-[0.2em] uppercase mb-4 block font-semibold">Drinks</span>
+            <ul class="space-y-4">
+              <li class="flex justify-between items-baseline border-b border-olive-deep/15 dark:border-cream-light/15 pb-3">
+                <span class="text-body">Freshly Brewed Coffee</span>
+                <span class="font-display text-[#2F3D1C] dark:text-gold">$3</span>
+              </li>
+              <li class="flex justify-between items-baseline border-b border-olive-deep/15 dark:border-cream-light/15 pb-3">
+                <span class="text-body">House Iced Tea</span>
+                <span class="font-display text-[#2F3D1C] dark:text-gold">$4</span>
+              </li>
+              <li class="flex justify-between items-baseline border-b border-olive-deep/15 dark:border-cream-light/15 pb-3">
+                <span class="text-body">Fresh Juice</span>
+                <span class="font-display text-[#2F3D1C] dark:text-gold">$5</span>
+              </li>
+              <li class="flex justify-between items-baseline">
+                <span class="text-body">Smoothies</span>
+                <span class="font-display text-[#2F3D1C] dark:text-gold">$6</span>
+              </li>
+            </ul>
+          </article>
+
+          <!-- Burgers & Pasta -->
+          <article class="menu-card reveal reveal-delay-3 bg-cream-light dark:bg-[#252D1C] rounded-sm p-6 sm:p-8 shadow-md border border-olive-deep/5 dark:border-cream-light/5">
+            <span class="text-label text-xs tracking-[0.2em] uppercase mb-4 block font-semibold">Burgers &amp; Pasta</span>
+            <ul class="space-y-4">
+              <li class="flex justify-between items-baseline border-b border-olive-deep/15 dark:border-cream-light/15 pb-3">
+                <span class="text-body">Classic Beef Burger</span>
+                <span class="font-display text-[#2F3D1C] dark:text-gold">$11</span>
+              </li>
+              <li class="flex justify-between items-baseline border-b border-olive-deep/15 dark:border-cream-light/15 pb-3">
+                <span class="text-body">Chicken Burger</span>
+                <span class="font-display text-[#2F3D1C] dark:text-gold">$10</span>
+              </li>
+              <li class="flex justify-between items-baseline border-b border-olive-deep/15 dark:border-cream-light/15 pb-3">
+                <span class="text-body">Creamy Alfredo Pasta</span>
+                <span class="font-display text-[#2F3D1C] dark:text-gold">$11</span>
+              </li>
+              <li class="flex justify-between items-baseline">
+                <span class="text-body">Arrabiata Penne</span>
+                <span class="font-display text-[#2F3D1C] dark:text-gold">$9</span>
+              </li>
+            </ul>
+          </article>
+
+          <!-- Desserts -->
+          <article class="menu-card reveal reveal-delay-4 bg-olive-deep dark:bg-olive-dark rounded-sm p-6 sm:p-8 shadow-md text-cream-light">
+            <span class="text-xs tracking-[0.2em] uppercase text-cream-light/50 mb-4 block">Desserts</span>
+            <ul class="space-y-4">
+              <li class="flex justify-between items-baseline border-b border-cream-light/10 pb-3">
+                <span class="font-light">Chocolate Lava Cake</span>
+                <span class="font-display text-gold">$7</span>
+              </li>
+              <li class="flex justify-between items-baseline border-b border-cream-light/10 pb-3">
+                <span class="font-light">Cheesecake of the Day</span>
+                <span class="font-display text-gold">$6</span>
+              </li>
+              <li class="flex justify-between items-baseline">
+                <span class="font-light">Seasonal Fruit Crumble</span>
+                <span class="font-display text-gold">$6</span>
+              </li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery -->
+    <section id="gallery" class="py-24 sm:py-32 px-5 sm:px-8" aria-labelledby="gallery-heading">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 reveal">
+          <p class="text-label text-xs tracking-[0.3em] uppercase mb-4 font-semibold">The Atmosphere</p>
+          <h2 id="gallery-heading" class="section-heading font-display text-3xl sm:text-4xl lg:text-5xl tracking-wide mb-6">Gallery</h2>
+          <div class="leaf-divider w-24 mx-auto"></div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 auto-rows-[200px] sm:auto-rows-[240px]">
+          <!-- Feature: interior with Kori logo window -->
+          <div class="gallery-item reveal col-span-2 row-span-2 overflow-hidden rounded-sm shadow-lg">
+            <img src="WhatsApp Image 2026-06-17 at 21.35.07.jpeg" alt="Kori Studio interior — frosted logo window with monkey chandelier and woven pendant light" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="gallery-item reveal reveal-delay-1 overflow-hidden rounded-sm shadow-lg">
+            <img src="WhatsApp Image 2026-06-17 at 21.13.45.jpeg" alt="Outdoor dining under canvas tent with warm pendant lighting" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="gallery-item reveal reveal-delay-2 overflow-hidden rounded-sm shadow-lg">
+            <img src="WhatsApp Image 2026-06-17 at 21.35.08.jpeg" alt="Interior dining area with bird mural, leaf pendant lights, and wooden furniture" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="gallery-item reveal reveal-delay-1 overflow-hidden rounded-sm shadow-lg">
+            <img src="WhatsApp Image 2026-06-17 at 21.34.58.jpeg" alt="Garden art scene with stone fountain, easel, and guests on the lawn" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="gallery-item reveal reveal-delay-2 overflow-hidden rounded-sm shadow-lg">
+            <img src="WhatsApp Image 2026-06-17 at 21.11.30.jpeg" alt="Gourmet cheese sliders with sweet potato fries" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="gallery-item reveal reveal-delay-1 col-span-2 overflow-hidden rounded-sm shadow-lg">
+            <img src="WhatsApp Image 2026-06-17 at 21.11.30 (1).jpeg" alt="Artisan pizza served in the garden with palm trees" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="gallery-item reveal reveal-delay-2 overflow-hidden rounded-sm shadow-lg">
+            <img src="WhatsApp Image 2026-06-17 at 21.13.44.jpeg" alt="Banana bread stack with caramelized fruit and crème anglaise" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="gallery-item reveal reveal-delay-3 overflow-hidden rounded-sm shadow-lg">
+            <img src="WhatsApp Image 2026-06-17 at 21.13.44 (1).jpeg" alt="Fresh couscous salad bowls with pomegranate and feta" class="w-full h-full object-cover" loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Art & Creativity -->
+    <section id="art" class="py-24 sm:py-32 bg-olive-deep dark:bg-[#151A10] text-cream-light relative overflow-hidden" aria-labelledby="art-heading">
+      <!-- Background pattern -->
+      <svg class="absolute inset-0 w-full h-full opacity-[0.04] pointer-events-none" aria-hidden="true">
+        <defs>
+          <pattern id="leaf-pattern" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+            <path d="M60 20C60 20 45 40 45 58C45 70 52 78 60 84C68 78 75 70 75 58C75 40 60 20 60 20Z" fill="none" stroke="currentColor" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#leaf-pattern)"/>
+      </svg>
+
+      <div class="max-w-7xl mx-auto px-5 sm:px-8 relative z-10">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <div class="reveal">
+            <p class="text-xs tracking-[0.3em] uppercase text-cream-light/50 mb-4">Art &amp; Creativity</p>
+            <h2 id="art-heading" class="font-display text-3xl sm:text-4xl lg:text-5xl tracking-wide mb-8 leading-tight">
+              Where plates become<br /><span class="text-gold italic font-normal">canvases</span>
+            </h2>
+            <div class="w-16 h-px bg-cream-light/20 mb-8"></div>
+            <p class="text-cream-light/75 font-light leading-relaxed mb-6 text-base sm:text-lg">
+              Kori Studio is a living gallery. From palette-shaped condiment dishes to rotating local artwork on our walls, creativity flows through every corner of our space.
+            </p>
+            <p class="text-cream-light/75 font-light leading-relaxed mb-10 text-base sm:text-lg">
+              Join us for open-mic evenings, art workshops, live acoustic sessions, and community gatherings. We believe nourishment extends beyond the table — it lives in expression, connection, and the quiet joy of making something beautiful.
+            </p>
+
+            <div class="grid sm:grid-cols-3 gap-6">
+              <div class="border border-cream-light/10 rounded-sm p-5 hover:border-gold/30 transition-colors duration-300">
+                <svg class="w-8 h-8 text-gold mb-3" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                  <rect x="4" y="8" width="24" height="18" rx="1" stroke="currentColor" stroke-width="0.8"/>
+                  <path d="M4 14H28" stroke="currentColor" stroke-width="0.8"/>
+                  <circle cx="10" cy="11" r="1.5" fill="currentColor"/>
+                  <circle cx="16" cy="11" r="1.5" fill="currentColor"/>
+                </svg>
+                <h3 class="font-display text-sm tracking-wide mb-1">Art Workshops</h3>
+                <p class="text-xs text-cream-light/50 font-light">Monthly creative sessions</p>
+              </div>
+              <div class="border border-cream-light/10 rounded-sm p-5 hover:border-gold/30 transition-colors duration-300">
+                <svg class="w-8 h-8 text-gold mb-3" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                  <path d="M8 24V12M16 24V8M24 24V16" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/>
+                  <path d="M4 24H28" stroke="currentColor" stroke-width="0.8"/>
+                </svg>
+                <h3 class="font-display text-sm tracking-wide mb-1">Live Sessions</h3>
+                <p class="text-xs text-cream-light/50 font-light">Music &amp; poetry nights</p>
+              </div>
+              <div class="border border-cream-light/10 rounded-sm p-5 hover:border-gold/30 transition-colors duration-300">
+                <svg class="w-8 h-8 text-gold mb-3" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                  <circle cx="16" cy="12" r="5" stroke="currentColor" stroke-width="0.8"/>
+                  <path d="M8 26C8 21 11 18 16 18C21 18 24 21 24 26" stroke="currentColor" stroke-width="0.8"/>
+                </svg>
+                <h3 class="font-display text-sm tracking-wide mb-1">Community</h3>
+                <p class="text-xs text-cream-light/50 font-light">A space to gather &amp; grow</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal reveal-delay-2 relative">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-4 mt-8">
+                <div class="overflow-hidden rounded-sm shadow-xl aspect-square">
+                  <img src="WhatsApp Image 2026-06-17 at 21.13.45.jpeg" alt="Outdoor dining under canvas tent with warm pendant lighting at Kori Studio" class="w-full h-full object-cover" loading="lazy" />
+                </div>
+                <div class="bg-cream-light/10 backdrop-blur-sm rounded-sm p-5 border border-cream-light/10">
+                  <p class="font-display text-lg text-gold mb-1">"Create"</p>
+                  <p class="text-xs text-cream-light/60 font-light tracking-wide">Our third promise — after eating and breathing, we make room for expression.</p>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <div class="bg-gold/20 backdrop-blur-sm rounded-sm p-5 border border-gold/20">
+                  <p class="font-display text-lg mb-1">Workshops</p>
+                  <p class="text-xs text-cream-light/60 font-light">Follow us on Instagram for upcoming dates &amp; events.</p>
+                </div>
+                <div class="overflow-hidden rounded-sm shadow-xl aspect-[3/4]">
+                  <img src="logo.jpeg" alt="Kori Studio brand — Eat Breathe Create" class="w-full h-full object-cover" loading="lazy" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visit Us -->
+    <section id="visit" class="py-24 sm:py-32 px-5 sm:px-8" aria-labelledby="visit-heading">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 reveal">
+          <p class="text-label text-xs tracking-[0.3em] uppercase mb-4 font-semibold">Find Us</p>
+          <h2 id="visit-heading" class="section-heading font-display text-3xl sm:text-4xl lg:text-5xl tracking-wide mb-6">Visit Us</h2>
+          <div class="leaf-divider w-24 mx-auto"></div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16">
+          <div class="reveal space-y-10">
+            <div>
+              <h3 class="section-heading font-display text-lg mb-4 tracking-wide font-semibold">Location</h3>
+              <address class="not-italic text-body-muted leading-relaxed">
+                16 Francis Warren<br />
+                Ilanda, Bulawayo<br />
+                Zimbabwe
+              </address>
+            </div>
+
+            <div>
+              <h3 class="section-heading font-display text-lg mb-4 tracking-wide font-semibold">Hours</h3>
+              <dl class="space-y-3 text-body-muted">
+                <div class="flex justify-between border-b border-olive-deep/15 dark:border-cream-light/15 pb-3">
+                  <dt>Monday – Friday</dt>
+                  <dd>8:00 AM – 9:00 PM</dd>
+                </div>
+                <div class="flex justify-between border-b border-olive-deep/15 dark:border-cream-light/15 pb-3">
+                  <dt>Saturday</dt>
+                  <dd>8:00 AM – 10:00 PM</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt>Sunday</dt>
+                  <dd>9:00 AM – 8:00 PM</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div>
+              <h3 class="section-heading font-display text-lg mb-4 tracking-wide font-semibold">Contact</h3>
+              <ul class="space-y-3 text-body-muted">
+                <li>
+                  <a href="tel:+263771234567" class="hover:text-olive-deep dark:hover:text-gold transition-colors duration-300">+263 77 123 4567</a>
+                </li>
+                <li>
+                  <a href="mailto:hello@koristudio.co.zw" class="hover:text-olive-deep dark:hover:text-gold transition-colors duration-300">hello@koristudio.co.zw</a>
+                </li>
+                <li>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-terracotta hover:text-olive-deep dark:hover:text-gold transition-colors duration-300 font-medium">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                    @koristudiobulawayo
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <a href="tel:+263771234567" class="inline-flex btn-primary px-8 py-4 bg-olive-deep text-cream-light text-xs tracking-[0.2em] uppercase font-medium rounded-sm hover:bg-olive transition-all duration-300 hover:-translate-y-0.5 shadow-lg">
+              Reserve a Table
+            </a>
+          </div>
+
+          <div class="reveal reveal-delay-2">
+            <div class="relative overflow-hidden rounded-sm shadow-2xl aspect-[4/3] lg:aspect-auto lg:h-full min-h-[320px] ring-1 ring-olive-deep/10 dark:ring-cream-light/10">
+              <iframe
+                title="Kori Studio location on Google Maps"
+                src="https://maps.google.com/maps?q=16+Francis+Warren,+Ilanda,+Bulawayo,+Zimbabwe&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                class="absolute inset-0 w-full h-full border-0 grayscale-[20%] contrast-[1.05] dark:grayscale-[40%] dark:opacity-90"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-olive-dark dark:bg-[#111508] text-cream-light/70 py-16 px-5 sm:px-8 border-t border-cream-light/5">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div class="sm:col-span-2 lg:col-span-1">
+          <img src="logo.jpeg" alt="Kori Studio" class="w-16 h-16 rounded-full object-cover mb-5 ring-1 ring-cream-light/10" width="64" height="64" />
+          <p class="font-display text-lg text-cream-light tracking-wide mb-2">K&#333;ri Studio</p>
+          <p class="text-xs tracking-[0.25em] uppercase text-cream-light/40">Eat &bull; Breathe &bull; Create</p>
+        </div>
+
+        <div>
+          <h4 class="text-xs tracking-[0.2em] uppercase text-cream-light/40 mb-5">Navigate</h4>
+          <ul class="space-y-3 text-sm font-light">
+            <li><a href="#about" class="hover:text-gold transition-colors duration-300">About</a></li>
+            <li><a href="#menu" class="hover:text-gold transition-colors duration-300">Menu</a></li>
+            <li><a href="#gallery" class="hover:text-gold transition-colors duration-300">Gallery</a></li>
+            <li><a href="#art" class="hover:text-gold transition-colors duration-300">Art &amp; Creativity</a></li>
+            <li><a href="#visit" class="hover:text-gold transition-colors duration-300">Visit Us</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs tracking-[0.2em] uppercase text-cream-light/40 mb-5">Contact</h4>
+          <ul class="space-y-3 text-sm font-light">
+            <li>16 Francis Warren, Ilanda</li>
+            <li>Bulawayo, Zimbabwe</li>
+            <li><a href="tel:+263771234567" class="hover:text-gold transition-colors duration-300">+263 77 123 4567</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-xs tracking-[0.2em] uppercase text-cream-light/40 mb-5">Follow</h4>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 text-cream-light hover:text-gold transition-colors duration-300 group">
+            <span class="p-2.5 rounded-full border border-cream-light/15 group-hover:border-gold/40 transition-colors duration-300">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+            </span>
+            <span class="text-sm font-light">@koristudiobulawayo</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="leaf-divider w-full mb-8 opacity-20"></div>
+
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-cream-light/35 tracking-wide font-light">
+        <p>&copy; 2026 Kori Studio Bulawayo. All rights reserved.</p>
+        <p>A calm creative sanctuary in the City of Kings.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // Theme toggle
+      const themeToggle = document.getElementById('theme-toggle');
+      const html = document.documentElement;
+
+      function setTheme(dark) {
+        html.classList.toggle('dark', dark);
+        localStorage.setItem('kori-theme', dark ? 'dark' : 'light');
+      }
+
+      const savedTheme = localStorage.getItem('kori-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        setTheme(true);
+      }
+
+      themeToggle.addEventListener('click', () => {
+        setTheme(!html.classList.contains('dark'));
+        onScroll();
+      });
+
+      // Mobile menu
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+
+      mobileMenuBtn.addEventListener('click', () => {
+        const isOpen = !mobileMenu.classList.contains('hidden');
+        mobileMenu.classList.toggle('hidden');
+        mobileMenuBtn.setAttribute('aria-expanded', String(!isOpen));
+      });
+
+      document.querySelectorAll('.mobile-nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+          mobileMenuBtn.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      // Header scroll effect
+      const header = document.getElementById('site-header');
+
+      function onScroll() {
+        const scrollY = window.scrollY;
+        const heroHeight = document.getElementById('hero').offsetHeight;
+        const headerOffset = 80;
+
+        if (scrollY > headerOffset) {
+          header.classList.add('nav-scrolled');
+          header.classList.remove('nav-over-hero');
+        } else {
+          header.classList.remove('nav-scrolled');
+          header.classList.add('nav-over-hero');
+        }
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // Hero parallax
+      const heroBg = document.getElementById('hero-bg');
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (heroBg && !prefersReducedMotion) {
+        window.addEventListener('scroll', () => {
+          const scrollY = window.scrollY;
+          const heroHeight = document.getElementById('hero').offsetHeight;
+          if (scrollY < heroHeight) {
+            heroBg.style.transform = `translateY(${scrollY * 0.35}px) scale(1.1)`;
+          }
+        }, { passive: true });
+      }
+
+      // Scroll reveal
+      const revealElements = document.querySelectorAll('.reveal');
+
+      if ('IntersectionObserver' in window) {
+        const revealObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                revealObserver.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+        );
+
+        revealElements.forEach(el => revealObserver.observe(el));
+      } else {
+        revealElements.forEach(el => el.classList.add('visible'));
+      }
+
+      // Smooth anchor scroll offset for fixed header
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', (e) => {
+          const targetId = anchor.getAttribute('href');
+          if (targetId === '#') return;
+          const target = document.querySelector(targetId);
+          if (target) {
+            e.preventDefault();
+            const headerHeight = header.offsetHeight;
+            const top = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+            window.scrollTo({ top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
