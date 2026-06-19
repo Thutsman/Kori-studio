@@ -198,8 +198,19 @@
     html.dark .pill-btn:hover { background: #FAF6F0; color: #2F3D1C; border-color: #FAF6F0; }
     html.dark .pill-display { border-color: rgba(245, 240, 230, 0.12); color: rgba(245, 240, 230, 0.4); background: rgba(245, 240, 230, 0.04); }
     html.dark .leaf-divider { background: linear-gradient(90deg, transparent, rgba(245, 240, 230, 0.25), transparent); }
-    html.dark h2, html.dark h3 { color: #F5F0E6; }
+    html.dark h1, html.dark h2, html.dark h3 { color: #F5F0E6 !important; }
+    html.dark .mi-price { color: #D4AA78 !important; }
+    html.dark .drink-price { color: #D4AA78 !important; }
     html.dark .mobile-nav-link { color: #F5F0E6; }
+
+    /* Notes, add-ons, and section blurb paragraphs that use olive text */
+    html.dark .menu-section > p,
+    html.dark .menu-section > div > p,
+    html.dark .menu-section p.text-xs,
+    html.dark .menu-section div.text-xs { color: rgba(245, 240, 230, 0.6) !important; }
+    html.dark .menu-section span.font-semibold { color: rgba(245, 240, 230, 0.75) !important; }
+    /* Page intro */
+    html.dark main > div > p { color: rgba(245, 240, 230, 0.65) !important; }
   </style>
 </head>
 
@@ -265,9 +276,9 @@
   <!-- ── Page intro ─────────────────────────────────────────────────────── -->
   <div class="max-w-6xl mx-auto px-5 sm:px-8 pt-10 pb-5">
     <p class="text-xs tracking-[0.3em] uppercase text-terracotta font-semibold mb-2">Kori Studio · Bulawayo</p>
-    <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl tracking-wide text-[#2F3D1C] mb-4">Full Menu</h1>
+    <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl tracking-wide text-[#2F3D1C] dark:text-[#F5F0E6] mb-4">Full Menu</h1>
     <div class="leaf-divider w-16 mb-4"></div>
-    <p class="text-sm text-[#4A5F2A]/70">All prices in USD · Tap <span class="font-semibold text-[#4A5F2A]">+</span> to add items to your order</p>
+    <p class="text-sm text-[#4A5F2A]/70 dark:text-[#F5F0E6]/60">All prices in USD · Tap <span class="font-semibold text-[#4A5F2A] dark:text-[#6B7F4A]">+</span> to add items to your order</p>
   </div>
 
   <!-- ── Tab bar ────────────────────────────────────────────────────────── -->
