@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Köri Menu CMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #FAF6F0;
+      color: #2F3D1C;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Gate ────────────────────────────────────────────────── */
+    #gate {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #FAF6F0;
+      padding: 1.5rem;
+    }
+    .gate-card {
+      background: #fff;
+      border: 1px solid rgba(74,95,42,0.15);
+      border-radius: 4px;
+      padding: 2.5rem 2.25rem;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 4px 24px rgba(47,61,28,0.06);
+      text-align: center;
+    }
+    .gate-logo {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 1rem;
+      letter-spacing: 0.18em;
+      color: #2F3D1C;
+      margin-bottom: 0.35rem;
+    }
+    .gate-sub {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(74,95,42,0.5);
+      margin-bottom: 2rem;
+    }
+    .gate-card input[type="password"] {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1px solid rgba(74,95,42,0.25);
+      border-radius: 3px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.9rem;
+      color: #2F3D1C;
+      background: #FAF6F0;
+      outline: none;
+      margin-bottom: 0.75rem;
+      transition: border-color 0.2s;
+    }
+    .gate-card input[type="password"]:focus { border-color: #4A5F2A; }
+    .gate-card button.gate-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: #4A5F2A;
+      color: #FAF6F0;
+      border: none;
+      border-radius: 3px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .gate-card button.gate-btn:hover { background: #3A4A22; }
+    .gate-error {
+      font-size: 0.78rem;
+      color: #c0392b;
+      margin-bottom: 0.75rem;
+      min-height: 1.1em;
+    }
+
+    /* ── Admin panel ─────────────────────────────────────────── */
+    #admin { display: none; min-height: 100vh; flex-direction: column; }
+
+    /* Header */
+    .admin-header {
+      background: #2F3D1C;
+      color: #FAF6F0;
+      padding: 0 1.5rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .admin-header h1 {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      margin: 0;
+      font-weight: 500;
+    }
+    .logout-btn {
+      background: rgba(250,246,240,0.12);
+      color: #FAF6F0;
+      border: 1px solid rgba(250,246,240,0.2);
+      padding: 0.4rem 0.9rem;
+      border-radius: 3px;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .logout-btn:hover { background: rgba(250,246,240,0.2); }
+
+    /* Tabs */
+    .cat-tabs {
+      background: #fff;
+      border-bottom: 1px solid rgba(74,95,42,0.12);
+      padding: 0 1.5rem;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .cat-tabs::-webkit-scrollbar { display: none; }
+    .cat-tab {
+      padding: 0.9rem 1.1rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(47,61,28,0.45);
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s, border-color 0.2s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .cat-tab:hover { color: #4A5F2A; }
+    .cat-tab.active { background: #4A5F2A; color: #FAF6F0; border-bottom-color: #4A5F2A; }
+
+    /* Content area */
+    .admin-content {
+      flex: 1;
+      padding: 1.75rem 1.5rem;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .content-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .content-header h2 {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      margin: 0;
+      color: #2F3D1C;
+    }
+    .add-btn {
+      background: #4A5F2A;
+      color: #FAF6F0;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: background 0.2s;
+    }
+    .add-btn:hover { background: #3A4A22; }
+
+    /* Table */
+    .table-wrap {
+      background: #fff;
+      border: 1px solid rgba(74,95,42,0.12);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+    }
+    thead th {
+      background: #F5F0E6;
+      padding: 0.7rem 1rem;
+      text-align: left;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(47,61,28,0.55);
+      border-bottom: 1px solid rgba(74,95,42,0.1);
+    }
+    tbody tr { border-bottom: 1px solid rgba(74,95,42,0.07); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(74,95,42,0.025); }
+    tbody td { padding: 0.75rem 1rem; vertical-align: middle; color: #2F3D1C; }
+    td.td-name { font-weight: 500; max-width: 200px; }
+    td.td-desc { color: rgba(47,61,28,0.55); font-size: 0.78rem; max-width: 260px; }
+    td.td-price { font-family: 'Cinzel', Georgia, serif; white-space: nowrap; }
+    td.td-actions { white-space: nowrap; }
+
+    /* Toggle switch */
+    .toggle-wrap { display: flex; align-items: center; }
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 38px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #ccc;
+      border-radius: 22px;
+      transition: background 0.25s;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.25s;
+    }
+    .toggle input:checked + .toggle-slider { background: #4A5F2A; }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+    /* Action buttons */
+    .action-btn {
+      padding: 0.35rem 0.7rem;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+      letter-spacing: 0.05em;
+    }
+    .edit-btn {
+      background: rgba(74,95,42,0.08);
+      color: #4A5F2A;
+      border-color: rgba(74,95,42,0.2);
+      margin-right: 0.4rem;
+    }
+    .edit-btn:hover { background: #4A5F2A; color: #FAF6F0; }
+    .delete-btn {
+      background: rgba(192,57,43,0.07);
+      color: #c0392b;
+      border-color: rgba(192,57,43,0.2);
+    }
+    .delete-btn:hover { background: #c0392b; color: #fff; }
+
+    /* Inline delete confirm */
+    .delete-confirm {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+    }
+    .delete-confirm span { color: rgba(47,61,28,0.65); }
+    .dc-cancel {
+      padding: 0.3rem 0.6rem;
+      border-radius: 3px;
+      border: 1px solid rgba(74,95,42,0.2);
+      background: none;
+      color: #4A5F2A;
+      font-size: 0.7rem;
+      cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .dc-cancel:hover { background: rgba(74,95,42,0.07); }
+    .dc-confirm {
+      padding: 0.3rem 0.6rem;
+      border-radius: 3px;
+      border: 1px solid rgba(192,57,43,0.3);
+      background: #c0392b;
+      color: #fff;
+      font-size: 0.7rem;
+      cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .dc-confirm:hover { background: #a93226; }
+
+    /* Spinner */
+    .spinner-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid rgba(74,95,42,0.15);
+      border-top-color: #4A5F2A;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Empty */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: rgba(47,61,28,0.4);
+      font-size: 0.85rem;
+    }
+
+    /* ── Modal ────────────────────────────────────────────────── */
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30,36,24,0.65);
+      backdrop-filter: blur(3px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 5px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(74,95,42,0.12);
+    }
+    .modal-header h3 {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      margin: 0;
+      color: #2F3D1C;
+    }
+    .modal-close {
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(47,61,28,0.4);
+      border-radius: 3px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .modal-close:hover { color: #2F3D1C; background: rgba(74,95,42,0.07); }
+    .modal-body { padding: 1.5rem; }
+    .form-row { margin-bottom: 1.1rem; }
+    .form-row label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(47,61,28,0.6);
+      margin-bottom: 0.4rem;
+    }
+    .form-row input[type="text"],
+    .form-row input[type="number"],
+    .form-row textarea,
+    .form-row select {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 1px solid rgba(74,95,42,0.22);
+      border-radius: 3px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.85rem;
+      color: #2F3D1C;
+      background: #FAF6F0;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-row input:focus,
+    .form-row textarea:focus,
+    .form-row select:focus { border-color: #4A5F2A; }
+    .form-row textarea { resize: vertical; min-height: 72px; }
+    .form-row-check {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.1rem;
+    }
+    .form-row-check input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: #4A5F2A;
+      cursor: pointer;
+    }
+    .form-row-check label {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #2F3D1C;
+      cursor: pointer;
+    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      padding: 1.1rem 1.5rem;
+      border-top: 1px solid rgba(74,95,42,0.1);
+      background: #FAF6F0;
+      border-radius: 0 0 5px 5px;
+    }
+    .cancel-btn {
+      padding: 0.6rem 1.1rem;
+      border-radius: 3px;
+      border: 1px solid rgba(74,95,42,0.22);
+      background: none;
+      color: #4A5F2A;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: background 0.15s;
+    }
+    .cancel-btn:hover { background: rgba(74,95,42,0.06); }
+    .save-btn {
+      padding: 0.6rem 1.3rem;
+      border-radius: 3px;
+      border: none;
+      background: #4A5F2A;
+      color: #FAF6F0;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: background 0.15s;
+    }
+    .save-btn:hover { background: #3A4A22; }
+    .save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ── Toasts ──────────────────────────────────────────────── */
+    #toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto;
+      padding: 0.75rem 1.1rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      animation: toast-in 0.25s ease;
+      max-width: 320px;
+      line-height: 1.4;
+    }
+    .toast.success { background: #2F6B3A; }
+    .toast.error { background: #c0392b; }
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .toast.out { animation: toast-out 0.25s ease forwards; }
+    @keyframes toast-out {
+      to { opacity: 0; transform: translateY(8px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Password Gate ─────────────────────────────────────────────────── -->
+  <div id="gate">
+    <div class="gate-card">
+      <p class="gate-logo">Köri Studio</p>
+      <p class="gate-sub">Menu Admin</p>
+      <div class="gate-error" id="gate-error"></div>
+      <input type="password" id="gate-pw" placeholder="Password" autocomplete="current-password" />
+      <button class="gate-btn" id="gate-submit">Sign In</button>
+    </div>
+  </div>
+
+  <!-- ── Admin Panel ────────────────────────────────────────────────────── -->
+  <div id="admin" style="display:none; flex-direction:column; min-height:100vh;">
+
+    <header class="admin-header">
+      <h1>Köri Menu CMS</h1>
+      <button class="logout-btn" id="logout-btn">Logout</button>
+    </header>
+
+    <div class="cat-tabs" id="cat-tabs">
+      <div class="spinner-wrap" style="padding:0.7rem 1.5rem;">
+        <div class="spinner" style="width:18px;height:18px;border-width:2px;border-color:rgba(74,95,42,0.15);border-top-color:#4A5F2A;"></div>
+      </div>
+    </div>
+
+    <div class="admin-content">
+      <div class="content-header">
+        <h2 id="section-title">Items</h2>
+        <button class="add-btn" id="add-item-btn">+ Add Item</button>
+      </div>
+      <div class="table-wrap" id="items-wrap">
+        <div class="spinner-wrap"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Modal ─────────────────────────────────────────────────────────── -->
+  <div id="modal-overlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h3 id="modal-title">Add Item</h3>
+        <button class="modal-close" id="modal-close-btn" aria-label="Close">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="item-form" novalidate>
+          <input type="hidden" id="f-id" />
+          <div class="form-row">
+            <label for="f-name">Name *</label>
+            <input type="text" id="f-name" required placeholder="Item name" />
+          </div>
+          <div class="form-row">
+            <label for="f-desc">Description</label>
+            <textarea id="f-desc" placeholder="Short description"></textarea>
+          </div>
+          <div class="form-grid">
+            <div class="form-row">
+              <label for="f-price">Price (USD)</label>
+              <input type="number" id="f-price" step="0.01" min="0" placeholder="0.00" />
+            </div>
+            <div class="form-row">
+              <label for="f-sort">Sort Order</label>
+              <input type="number" id="f-sort" placeholder="0" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="f-display-type">Display Type</label>
+            <select id="f-display-type">
+              <option value="standard">Standard</option>
+              <option value="compact">Compact</option>
+              <option value="pill">Pill</option>
+              <option value="pill_display">Pill Display</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="f-pill-group">Pill Group</label>
+            <input type="text" id="f-pill-group" placeholder="e.g. Tea, Milkshakes — leave blank for individual items" />
+          </div>
+          <div class="form-row">
+            <label for="f-subcategory">Subcategory</label>
+            <input type="text" id="f-subcategory" placeholder="e.g. sides, hot, tea, iced — leave blank for main items" />
+          </div>
+          <div class="form-row-check">
+            <input type="checkbox" id="f-available" checked />
+            <label for="f-available">Available</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="cancel-btn" id="modal-cancel-btn">Cancel</button>
+        <button class="save-btn" id="modal-save-btn">Save Item</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast container ───────────────────────────────────────────────── -->
+  <div id="toast-container"></div>
+
+  <script>
+  (function () {
+    var SUPABASE_URL = 'https://rwmlrwjkyqrnwlfkzuoo.supabase.co';
+    var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3bWxyd2preXFybndsZmt6dW9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNTY5MDMsImV4cCI6MjA4NDgzMjkwM30.hjjicIiIIeXR0KM-vd-aGolqp87bowgTTLR9n_3hHPo';
+    var ADMIN_PASSWORD = 'KoriMenu2026';
+    var AUTH_KEY = 'kori-admin-auth';
+
+    var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    /* ── Utilities ─────────────────────────────────────── */
+    function esc(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toast(msg, type) {
+      var container = document.getElementById('toast-container');
+      var el = document.createElement('div');
+      el.className = 'toast ' + (type || 'success');
+      el.textContent = msg;
+      container.appendChild(el);
+      setTimeout(function () {
+        el.classList.add('out');
+        setTimeout(function () { el.remove(); }, 280);
+      }, 3000);
+    }
+
+    /* ── Gate ──────────────────────────────────────────── */
+    var gate = document.getElementById('gate');
+    var admin = document.getElementById('admin');
+    var gatePw = document.getElementById('gate-pw');
+    var gateErr = document.getElementById('gate-error');
+    var gateSubmit = document.getElementById('gate-submit');
+
+    function showAdmin() {
+      gate.style.display = 'none';
+      admin.style.display = 'flex';
+      init();
+    }
+
+    function showGate() {
+      admin.style.display = 'none';
+      gate.style.display = 'flex';
+      gatePw.value = '';
+      gateErr.textContent = '';
+    }
+
+    if (sessionStorage.getItem(AUTH_KEY) === '1') {
+      showAdmin();
+    }
+
+    gateSubmit.addEventListener('click', function () {
+      if (gatePw.value === ADMIN_PASSWORD) {
+        sessionStorage.setItem(AUTH_KEY, '1');
+        gateErr.textContent = '';
+        showAdmin();
+      } else {
+        gateErr.textContent = 'Incorrect password. Try again.';
+        gatePw.value = '';
+        gatePw.focus();
+      }
+    });
+    gatePw.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') gateSubmit.click();
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', function () {
+      sessionStorage.removeItem(AUTH_KEY);
+      showGate();
+    });
+
+    /* ── State ─────────────────────────────────────────── */
+    var categories = [];
+    var currentCatSlug = null;
+    var currentItems = [];
+
+    /* ── Init ──────────────────────────────────────────── */
+    function init() {
+      loadCategories();
+    }
+
+    /* ── Categories ────────────────────────────────────── */
+    async function loadCategories() {
+      var tabsEl = document.getElementById('cat-tabs');
+      tabsEl.innerHTML = '<div class="spinner-wrap" style="padding:0.7rem 1.5rem;"><div class="spinner" style="width:18px;height:18px;border-width:2px;border-color:rgba(74,95,42,0.15);border-top-color:#4A5F2A;"></div></div>';
+
+      var { data, error } = await sb
+        .from('kori_menu_categories')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (error) { toast('Failed to load categories: ' + error.message, 'error'); return; }
+      categories = data || [];
+
+      tabsEl.innerHTML = categories.map(function (cat) {
+        return '<button class="cat-tab" data-slug="' + esc(cat.slug) + '">' + esc(cat.name) + '</button>';
+      }).join('');
+
+      tabsEl.querySelectorAll('.cat-tab').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          selectCategory(btn.dataset.slug);
+        });
+      });
+
+      if (categories.length > 0) {
+        selectCategory(categories[0].slug);
+      }
+    }
+
+    function selectCategory(slug) {
+      currentCatSlug = slug;
+      document.querySelectorAll('.cat-tab').forEach(function (t) {
+        t.classList.toggle('active', t.dataset.slug === slug);
+      });
+      var cat = categories.find(function (c) { return c.slug === slug; });
+      document.getElementById('section-title').textContent = cat ? cat.name : 'Items';
+      loadItems(slug);
+    }
+
+    /* ── Items ─────────────────────────────────────────── */
+    async function loadItems(slug) {
+      var wrap = document.getElementById('items-wrap');
+      wrap.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
+
+      var { data, error } = await sb
+        .from('kori_menu_items')
+        .select('*')
+        .eq('category_slug', slug)
+        .order('sort_order', { ascending: true });
+
+      if (error) { toast('Failed to load items: ' + error.message, 'error'); return; }
+      currentItems = data || [];
+      renderItemsTable(currentItems);
+    }
+
+    function renderItemsTable(items) {
+      var wrap = document.getElementById('items-wrap');
+      if (items.length === 0) {
+        wrap.innerHTML = '<div class="empty-state">No items in this category yet. Click "+ Add Item" to get started.</div>';
+        return;
+      }
+      wrap.innerHTML = '<table>' +
+        '<thead><tr>' +
+        '<th>Name</th>' +
+        '<th>Description</th>' +
+        '<th>Price</th>' +
+        '<th>Available</th>' +
+        '<th>Actions</th>' +
+        '</tr></thead>' +
+        '<tbody>' +
+        items.map(function (item) {
+          return '<tr data-id="' + esc(item.id) + '">' +
+            '<td class="td-name">' + esc(item.name) + '</td>' +
+            '<td class="td-desc">' + esc(item.description || '') + '</td>' +
+            '<td class="td-price">' + (item.price != null ? '$' + parseFloat(item.price).toFixed(2) : '—') + '</td>' +
+            '<td><label class="toggle toggle-wrap"><input type="checkbox" class="avail-toggle" data-id="' + esc(item.id) + '" ' + (item.available ? 'checked' : '') + ' /><span class="toggle-slider"></span></label></td>' +
+            '<td class="td-actions"><span class="actions-wrap">' +
+              '<button class="action-btn edit-btn" data-id="' + esc(item.id) + '">Edit</button>' +
+              '<button class="action-btn delete-btn" data-id="' + esc(item.id) + '">Delete</button>' +
+            '</span></td>' +
+            '</tr>';
+        }).join('') +
+        '</tbody></table>';
+
+      wrap.querySelectorAll('.avail-toggle').forEach(function (chk) {
+        chk.addEventListener('change', function () {
+          toggleAvailable(chk.dataset.id, chk.checked);
+        });
+      });
+
+      wrap.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var item = currentItems.find(function (i) { return i.id === btn.dataset.id; });
+          if (item) openEditModal(item);
+        });
+      });
+
+      wrap.querySelectorAll('.delete-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          showDeleteConfirm(btn);
+        });
+      });
+    }
+
+    async function toggleAvailable(id, val) {
+      var { error } = await sb
+        .from('kori_menu_items')
+        .update({ available: val })
+        .eq('id', id);
+      if (error) {
+        toast('Failed to update: ' + error.message, 'error');
+        var chk = document.querySelector('.avail-toggle[data-id="' + id + '"]');
+        if (chk) chk.checked = !val;
+      } else {
+        var item = currentItems.find(function (i) { return i.id === id; });
+        if (item) item.available = val;
+        toast('Availability updated', 'success');
+      }
+    }
+
+    function showDeleteConfirm(btn) {
+      var id = btn.dataset.id;
+      var actionsWrap = btn.closest('.actions-wrap');
+      actionsWrap.innerHTML = '<span class="delete-confirm">' +
+        '<span>Really delete?</span>' +
+        '<button class="dc-cancel">Cancel</button>' +
+        '<button class="dc-confirm">Delete</button>' +
+        '</span>';
+      actionsWrap.querySelector('.dc-cancel').addEventListener('click', function () {
+        actionsWrap.innerHTML = '<button class="action-btn edit-btn" data-id="' + esc(id) + '">Edit</button>' +
+          '<button class="action-btn delete-btn" data-id="' + esc(id) + '">Delete</button>';
+        actionsWrap.querySelector('.edit-btn').addEventListener('click', function () {
+          var item = currentItems.find(function (i) { return i.id === id; });
+          if (item) openEditModal(item);
+        });
+        actionsWrap.querySelector('.delete-btn').addEventListener('click', function () {
+          showDeleteConfirm(actionsWrap.querySelector('.delete-btn'));
+        });
+      });
+      actionsWrap.querySelector('.dc-confirm').addEventListener('click', function () {
+        deleteItem(id);
+      });
+    }
+
+    async function deleteItem(id) {
+      var { error } = await sb.from('kori_menu_items').delete().eq('id', id);
+      if (error) {
+        toast('Delete failed: ' + error.message, 'error');
+      } else {
+        toast('Item deleted', 'success');
+        currentItems = currentItems.filter(function (i) { return i.id !== id; });
+        renderItemsTable(currentItems);
+      }
+    }
+
+    /* ── Modal ─────────────────────────────────────────── */
+    var modalOverlay = document.getElementById('modal-overlay');
+    var modalTitle   = document.getElementById('modal-title');
+    var fId          = document.getElementById('f-id');
+    var fName        = document.getElementById('f-name');
+    var fDesc        = document.getElementById('f-desc');
+    var fPrice       = document.getElementById('f-price');
+    var fSort        = document.getElementById('f-sort');
+    var fDisplayType = document.getElementById('f-display-type');
+    var fPillGroup   = document.getElementById('f-pill-group');
+    var fSubcat      = document.getElementById('f-subcategory');
+    var fAvailable   = document.getElementById('f-available');
+    var saveBtn      = document.getElementById('modal-save-btn');
+
+    function openAddModal() {
+      modalTitle.textContent = 'Add Item';
+      fId.value = '';
+      fName.value = '';
+      fDesc.value = '';
+      fPrice.value = '';
+      fSort.value = '';
+      fDisplayType.value = 'standard';
+      fPillGroup.value = '';
+      fSubcat.value = '';
+      fAvailable.checked = true;
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Item';
+      modalOverlay.classList.add('open');
+      fName.focus();
+    }
+
+    function openEditModal(item) {
+      modalTitle.textContent = 'Edit Item';
+      fId.value = item.id || '';
+      fName.value = item.name || '';
+      fDesc.value = item.description || '';
+      fPrice.value = item.price != null ? item.price : '';
+      fSort.value = item.sort_order != null ? item.sort_order : '';
+      fDisplayType.value = item.display_type || 'standard';
+      fPillGroup.value = item.pill_group || '';
+      fSubcat.value = item.subcategory || '';
+      fAvailable.checked = item.available !== false;
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Item';
+      modalOverlay.classList.add('open');
+      fName.focus();
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('open');
+    }
+
+    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+    document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', function (e) {
+      if (e.target === modalOverlay) closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modalOverlay.classList.contains('open')) closeModal();
+    });
+
+    document.getElementById('add-item-btn').addEventListener('click', openAddModal);
+
+    saveBtn.addEventListener('click', async function () {
+      var name = fName.value.trim();
+      if (!name) { fName.focus(); toast('Name is required', 'error'); return; }
+      if (!currentCatSlug) { toast('No category selected', 'error'); return; }
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving…';
+
+      var payload = {
+        category_slug: currentCatSlug,
+        name: name,
+        description: fDesc.value.trim() || null,
+        price: fPrice.value !== '' ? parseFloat(fPrice.value) : null,
+        display_type: fDisplayType.value || 'standard',
+        pill_group: fPillGroup.value.trim() || null,
+        subcategory: fSubcat.value.trim() || null,
+        available: fAvailable.checked,
+        sort_order: fSort.value !== '' ? parseInt(fSort.value, 10) : 0
+      };
+
+      var id = fId.value.trim();
+      var error;
+      if (id) {
+        var res = await sb.from('kori_menu_items').update(payload).eq('id', id);
+        error = res.error;
+      } else {
+        var res = await sb.from('kori_menu_items').insert(payload);
+        error = res.error;
+      }
+
+      if (error) {
+        toast('Save failed: ' + error.message, 'error');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Item';
+      } else {
+        toast(id ? 'Item updated' : 'Item added', 'success');
+        closeModal();
+        loadItems(currentCatSlug);
+      }
+    });
+
+  })();
+  </script>
+</body>
+</html>

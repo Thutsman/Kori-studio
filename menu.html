@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Full menu — Kori Studio Café & Restaurant, Bulawayo. Breakfast, burgers, pizza, mains, drinks and more. Prices in USD." />
+  <meta name="description" content="Full menu — Kori Studio Café &amp; Restaurant, Bulawayo. Breakfast, burgers, pizza, mains, drinks and more. Prices in USD." />
   <title>Menu — Kori Studio Bulawayo</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -30,6 +30,8 @@
       },
     };
   </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * { box-sizing: border-box; }
@@ -171,6 +173,22 @@
     }
     .nav-icon-btn:hover { border-color: rgba(47, 61, 28, 0.6); }
 
+    /* ── Loading spinner ─────────────────────────────────────────────────── */
+    .menu-spinner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem 2rem;
+    }
+    .spinner-ring {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(74, 95, 42, 0.15);
+      border-top-color: #4A5F2A;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* ── Dark mode ───────────────────────────────────────────────────────── */
     html.dark body { background-color: #1E2418; color: #F5F0E6; }
     html.dark .texture-bg {
@@ -186,11 +204,11 @@
     html.dark .tab-link.active { color: #FAF6F0; border-bottom-color: #6B7F4A; }
     html.dark .mi-name { color: #F5F0E6; }
     html.dark .mi-desc { color: rgba(245, 240, 230, 0.5); }
-    html.dark .mi-price { color: #B8956A; }
+    html.dark .mi-price { color: #D4AA78 !important; }
     html.dark .menu-item { border-bottom-color: rgba(245, 240, 230, 0.08); }
     html.dark .menu-item:last-child { border-bottom: 0; }
     html.dark .drink-name { color: #F5F0E6; }
-    html.dark .drink-price { color: #6B7F4A; }
+    html.dark .drink-price { color: #D4AA78 !important; }
     html.dark .drink-item { border-bottom-color: rgba(245, 240, 230, 0.07); }
     html.dark .cart-plus-btn { border-color: rgba(245, 240, 230, 0.3); color: rgba(245, 240, 230, 0.85); }
     html.dark .cart-plus-btn:hover { background: #FAF6F0; color: #4A5F2A; border-color: #FAF6F0; }
@@ -199,17 +217,12 @@
     html.dark .pill-display { border-color: rgba(245, 240, 230, 0.12); color: rgba(245, 240, 230, 0.4); background: rgba(245, 240, 230, 0.04); }
     html.dark .leaf-divider { background: linear-gradient(90deg, transparent, rgba(245, 240, 230, 0.25), transparent); }
     html.dark h1, html.dark h2, html.dark h3 { color: #F5F0E6 !important; }
-    html.dark .mi-price { color: #D4AA78 !important; }
-    html.dark .drink-price { color: #D4AA78 !important; }
     html.dark .mobile-nav-link { color: #F5F0E6; }
-
-    /* Notes, add-ons, and section blurb paragraphs that use olive text */
     html.dark .menu-section > p,
     html.dark .menu-section > div > p,
     html.dark .menu-section p.text-xs,
     html.dark .menu-section div.text-xs { color: rgba(245, 240, 230, 0.6) !important; }
     html.dark .menu-section span.font-semibold { color: rgba(245, 240, 230, 0.75) !important; }
-    /* Page intro */
     html.dark main > div > p { color: rgba(245, 240, 230, 0.65) !important; }
   </style>
 </head>
@@ -254,7 +267,7 @@
         <!-- Hamburger -->
         <button id="mobile-menu-btn" type="button" class="nav-icon-btn lg:hidden p-2.5 rounded-sm border" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path id="menu-icon-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
           </svg>
         </button>
       </div>
@@ -263,11 +276,11 @@
     <!-- Mobile dropdown -->
     <div id="mobile-menu" class="lg:hidden hidden border-t border-olive-deep/15 dark:border-cream-light/10 bg-[#FAF6F0] dark:bg-[#1E2418] transition-colors duration-300">
       <div class="max-w-6xl mx-auto px-5 py-7 flex flex-col gap-5">
-        <a href="index.html#about"  class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">About</a>
+        <a href="index.html#about"   class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">About</a>
         <a href="index.html#gallery" class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">Gallery</a>
-        <a href="index.html#art"    class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">Art &amp; Creativity</a>
-        <a href="index.html#visit"  class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">Visit Us</a>
-        <a href="checkout.html"     class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-terracotta">Checkout</a>
+        <a href="index.html#art"     class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">Art &amp; Creativity</a>
+        <a href="index.html#visit"   class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-[#2F3D1C] dark:text-cream-light">Visit Us</a>
+        <a href="checkout.html"      class="mobile-nav-link text-sm tracking-[0.2em] uppercase font-medium text-terracotta">Checkout</a>
       </div>
     </div>
   </header>
@@ -283,814 +296,18 @@
   <!-- ── Tab bar ────────────────────────────────────────────────────────── -->
   <nav class="tab-bar sticky top-[77px] z-30" aria-label="Menu categories">
     <div class="max-w-6xl mx-auto px-2">
-      <div class="tab-scroll">
-        <a href="#breakfast" class="tab-link">Breakfast</a>
-        <a href="#toasties" class="tab-link">Toasties</a>
-        <a href="#salads" class="tab-link">Salads</a>
-        <a href="#burgers" class="tab-link">Burgers</a>
-        <a href="#pizza" class="tab-link">Pizza</a>
-        <a href="#pasta" class="tab-link">Pasta</a>
-        <a href="#mains" class="tab-link">Mains &amp; Grill</a>
-        <a href="#feasts" class="tab-link">Fire &amp; Feast</a>
-        <a href="#desserts" class="tab-link">Desserts</a>
-        <a href="#drinks" class="tab-link">Drinks</a>
+      <div class="tab-scroll" id="tab-scroll">
+        <!-- Tabs rendered dynamically -->
       </div>
     </div>
   </nav>
 
-  <main class="max-w-6xl mx-auto px-5 sm:px-8 pb-24">
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- BREAKFAST                                                          -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="breakfast" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">
-      <div class="mb-9">
-        <p class="text-[10px] tracking-[0.3em] uppercase text-terracotta font-semibold mb-1.5">Served 9 AM – 4 PM</p>
-        <h2 class="font-display text-2xl sm:text-3xl tracking-wide text-[#2F3D1C] mb-4">Breakfast</h2>
-        <div class="leaf-divider w-12"></div>
+  <main id="menu-main" class="max-w-6xl mx-auto px-5 sm:px-8 pb-24">
+    <div id="menu-content">
+      <div class="menu-spinner">
+        <div class="spinner-ring"></div>
       </div>
-
-      <div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16">
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Eggs Your Way</p><p class="mi-desc">Scrambled, poached or fried eggs with toast and bacon</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$5</span><button class="add-to-cart cart-plus-btn" data-id="eggs-your-way" data-name="Eggs Your Way" data-price="5" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Chilli Eggs</p><p class="mi-desc">Chilli eggs and hash browns</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$7</span><button class="add-to-cart cart-plus-btn" data-id="chilli-eggs" data-name="Chilli Eggs" data-price="7" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Mini Breakfast</p><p class="mi-desc">2 eggs, bacon, fried tomatoes, hash browns and toast</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$6</span><button class="add-to-cart cart-plus-btn" data-id="mini-breakfast" data-name="Mini Breakfast" data-price="6" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">3-Egg Omelette</p><p class="mi-desc">Pick 3: tomatoes, onion, bell peppers, spinach, chopped bacon, chopped sausage, cheese, mushrooms</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$7</span><button class="add-to-cart cart-plus-btn" data-id="omelette" data-name="3-Egg Omelette" data-price="7" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Kori Breakfast</p><p class="mi-desc">2 eggs, bacon, beans, sausage, mushroom, tomatoes and toast</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="kori-breakfast" data-name="Kori Breakfast" data-price="12" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Breakfast Bagel</p><p class="mi-desc">Toasted bagel, eggs, bacon and melted cheese</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$8</span><button class="add-to-cart cart-plus-btn" data-id="breakfast-bagel" data-name="Breakfast Bagel" data-price="8" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Breakfast Burrito</p><p class="mi-desc">Breakfast the Mexican way, with a delicious chipotle sauce</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="breakfast-burrito" data-name="Breakfast Burrito" data-price="12" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">French Toast</p><p class="mi-desc">Sweet bread in an egg custard with mascarpone and berries</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$9</span><button class="add-to-cart cart-plus-btn" data-id="french-toast" data-name="French Toast" data-price="9" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Smashed Avo</p><p class="mi-desc">Smashed avo on toast, eggs your way and pickled onion <em class="text-terracotta/80 not-italic">(seasonal)</em></p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$8</span><button class="add-to-cart cart-plus-btn" data-id="smashed-avo" data-name="Smashed Avo" data-price="8" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Toasted 'Nana Loaf</p><p class="mi-desc">With caramelised bananas and maple whipped cream</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$7</span><button class="add-to-cart cart-plus-btn" data-id="nana-loaf" data-name="Toasted 'Nana Loaf" data-price="7" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Eggs Benedict</p><p class="mi-desc">On toast with baby spinach, poached eggs and homemade hollandaise sauce</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$8</span><button class="add-to-cart cart-plus-btn" data-id="eggs-benedict" data-name="Eggs Benedict" data-price="8" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Yoghurt Bowl</p><p class="mi-desc">Greek yoghurt parfait with fruits and berries</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$6</span><button class="add-to-cart cart-plus-btn" data-id="yoghurt-bowl" data-name="Yoghurt Bowl" data-price="6" data-category="Breakfast" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="mt-6 pt-5 border-t border-olive-deep/8 flex flex-wrap gap-x-8 gap-y-2 text-xs text-[#4A5F2A]/65">
-        <p><span class="font-semibold text-[#2F3D1C]/80">Add-ons:</span> Bacon +$2 · Smoked Salmon +$4</p>
-        <p><span class="font-semibold text-[#2F3D1C]/80">Bread upgrade:</span> Sourdough +$1 · Croissant +$2</p>
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- TOASTIES                                                           -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="toasties" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">
-      <div class="mb-9">
-        <h2 class="font-display text-2xl sm:text-3xl tracking-wide text-[#2F3D1C] mb-4">Toasties</h2>
-        <div class="leaf-divider w-12"></div>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16">
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Chicken Mayo</p><p class="mi-desc">Chicken mayo on toast</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$7</span><button class="add-to-cart cart-plus-btn" data-id="chicken-mayo-toast" data-name="Chicken Mayo Toastie" data-price="7" data-category="Toasties" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Steak, Cheese &amp; Onion</p><p class="mi-desc">Steak strips, melted cheddar cheese, grilled onion on toast</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$7</span><button class="add-to-cart cart-plus-btn" data-id="steak-cheese-toast" data-name="Steak, Cheese & Onion Toastie" data-price="7" data-category="Toasties" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Chicken Avo Club</p><p class="mi-desc">Grilled chicken, sliced avo, cabbage slaw, pickles and house mayo</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$8</span><button class="add-to-cart cart-plus-btn" data-id="chicken-avo-club" data-name="Chicken Avo Club" data-price="8" data-category="Toasties" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Falafel Wrap</p><p class="mi-desc">Crispy falafel with tzatziki, chopped lettuce and onion on a tortilla wrap</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$10</span><button class="add-to-cart cart-plus-btn" data-id="falafel-wrap" data-name="Falafel Wrap" data-price="10" data-category="Toasties" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Tuna Melt</p><p class="mi-desc">Tuna salad, melted cheese on toast</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$10</span><button class="add-to-cart cart-plus-btn" data-id="tuna-melt" data-name="Tuna Melt" data-price="10" data-category="Toasties" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Crispy Chicken Bagel</p><p class="mi-desc">Glazed crispy chicken, cabbage slaw, pickles and house mayo</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$11</span><button class="add-to-cart cart-plus-btn" data-id="crispy-chicken-bagel" data-name="Crispy Chicken Bagel" data-price="11" data-category="Toasties" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Halloumi Avo</p><p class="mi-desc">Halloumi, smashed avo and grilled tomato on toast</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="halloumi-avo" data-name="Halloumi Avo" data-price="12" data-category="Toasties" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- SALADS                                                             -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="salads" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">
-      <div class="mb-9">
-        <h2 class="font-display text-2xl sm:text-3xl tracking-wide text-[#2F3D1C] mb-4">Salads</h2>
-        <div class="leaf-divider w-12"></div>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16">
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Chicken Caesar</p><p class="mi-desc">Speaks for itself, with a deliciously soft grilled chicken</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="chicken-caesar" data-name="Chicken Caesar Salad" data-price="12" data-category="Salads" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Grilled Chicken</p><p class="mi-desc">Grilled chicken, avo cubes, cherry tomatoes, cucumber, artisan salad</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="grilled-chicken-salad" data-name="Grilled Chicken Salad" data-price="12" data-category="Salads" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Butternut Couscous</p><p class="mi-desc">Roasted butternut with crumbed feta on a bed of couscous and rucola</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$10</span><button class="add-to-cart cart-plus-btn" data-id="butternut-couscous" data-name="Butternut Couscous Salad" data-price="10" data-category="Salads" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Beetroot Rucola</p><p class="mi-desc">Beetroot, chickpeas, arugula, feta and walnut</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$10</span><button class="add-to-cart cart-plus-btn" data-id="beetroot-rucola" data-name="Beetroot Rucola Salad" data-price="10" data-category="Salads" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Greek Salad</p><p class="mi-desc">With cucumber, tomatoes, olives and feta</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="greek-salad" data-name="Greek Salad" data-price="12" data-category="Salads" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Falafel Bowl</p><p class="mi-desc">Homemade falafel with humus and tzatziki on a mix of lettuce, cucumber and red cabbage</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="falafel-bowl" data-name="Falafel Bowl" data-price="12" data-category="Salads" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- BURGERS                                                            -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="burgers" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">
-      <div class="mb-9">
-        <h2 class="font-display text-2xl sm:text-3xl tracking-wide text-[#2F3D1C] mb-4">Burgers</h2>
-        <div class="leaf-divider w-12"></div>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16">
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Köri Burger</p><p class="mi-desc">Burger patty, cheese, lettuce and tomato — then add your options</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$10</span><button class="add-to-cart cart-plus-btn" data-id="kori-burger" data-name="Köri Burger" data-price="10" data-category="Burgers" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Crispy Chicken</p><p class="mi-desc">Crispy chicken, cabbage slaw, pickles</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="crispy-chicken-burger" data-name="Crispy Chicken Burger" data-price="12" data-category="Burgers" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Peri-Peri Chicken</p><p class="mi-desc">Grilled chicken burger with peri-peri sauce</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="peri-peri-burger" data-name="Peri-Peri Chicken Burger" data-price="12" data-category="Burgers" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Falafel Burger</p><p class="mi-desc">Tzatziki sauce, cabbage slaw, pickles and home made falafel</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$11</span><button class="add-to-cart cart-plus-btn" data-id="falafel-burger" data-name="Falafel Burger" data-price="11" data-category="Burgers" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Fab Burger</p><p class="mi-desc">Feta, avocado and bacon</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$14</span><button class="add-to-cart cart-plus-btn" data-id="fab-burger" data-name="Fab Burger" data-price="14" data-category="Burgers" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-      </div>
-
-      <p class="mt-5 text-xs text-[#4A5F2A]/65"><span class="font-semibold text-[#2F3D1C]/70">Burger extras:</span> Cheese · Double patty · Caramelised onion · Mushrooms · Bacon</p>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- PIZZA                                                              -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="pizza" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">
-      <div class="mb-9">
-        <h2 class="font-display text-2xl sm:text-3xl tracking-wide text-[#2F3D1C] mb-4">Pizza</h2>
-        <div class="leaf-divider w-12"></div>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16">
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Margherita</p><p class="mi-desc">Classic tomato base with mozzarella</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$10</span><button class="add-to-cart cart-plus-btn" data-id="pizza-margherita" data-name="Margherita Pizza" data-price="10" data-category="Pizza" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Vegetarian</p><p class="mi-desc">Garden-fresh vegetable pizza</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$10</span><button class="add-to-cart cart-plus-btn" data-id="pizza-veg" data-name="Vegetarian Pizza" data-price="10" data-category="Pizza" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Pepperoni</p><p class="mi-desc">Tomato base, mozzarella and pepperoni</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="pizza-pepperoni" data-name="Pepperoni Pizza" data-price="12" data-category="Pizza" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Sticky Chicken</p><p class="mi-desc">Sticky glazed chicken with tomato base and mozzarella</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="pizza-sticky-chicken" data-name="Sticky Chicken Pizza" data-price="12" data-category="Pizza" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Peri-Peri Chicken</p><p class="mi-desc">Peri-peri seasoned chicken with tomato base and mozzarella</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="pizza-peri-peri" data-name="Peri-Peri Chicken Pizza" data-price="12" data-category="Pizza" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Chicken Mushroom</p><p class="mi-desc">Chicken and mushroom with creamy base and mozzarella</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$13</span><button class="add-to-cart cart-plus-btn" data-id="pizza-chicken-mushroom" data-name="Chicken Mushroom Pizza" data-price="13" data-category="Pizza" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Philly Cheesesteak</p><p class="mi-desc">Steak strips, caramelised onions and melted cheese</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$15</span><button class="add-to-cart cart-plus-btn" data-id="pizza-philly" data-name="Philly Cheesesteak Pizza" data-price="15" data-category="Pizza" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Feta, Bacon &amp; Avo</p><p class="mi-desc">Feta, crispy bacon and fresh avocado</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$15</span><button class="add-to-cart cart-plus-btn" data-id="pizza-feta-bacon-avo" data-name="Feta, Bacon & Avo Pizza" data-price="15" data-category="Pizza" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- PASTA                                                              -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="pasta" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">
-      <div class="mb-9">
-        <h2 class="font-display text-2xl sm:text-3xl tracking-wide text-[#2F3D1C] mb-4">Pasta</h2>
-        <div class="leaf-divider w-12"></div>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16">
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Pesto Chicken Pasta</p><p class="mi-desc">Home made pesto, served with grilled chicken</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="pasta-pesto-chicken" data-name="Pesto Chicken Pasta" data-price="12" data-category="Pasta" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Pesto Pasta <span class="text-[#6B7F4A] font-normal text-xs">(Vegetarian)</span></p><p class="mi-desc">Home made pesto, vegetarian option</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$10</span><button class="add-to-cart cart-plus-btn" data-id="pasta-pesto-veg" data-name="Pesto Pasta (Vegetarian)" data-price="10" data-category="Pasta" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Marinara</p><p class="mi-desc">Marinara sauce with grilled chicken or meatballs</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="pasta-marinara" data-name="Marinara Pasta" data-price="12" data-category="Pasta" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Chicken Mushroom</p><p class="mi-desc">Creamy chicken mushroom with penne pasta</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$14</span><button class="add-to-cart cart-plus-btn" data-id="pasta-chicken-mushroom" data-name="Chicken Mushroom Pasta" data-price="14" data-category="Pasta" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Napoletana Veg</p><p class="mi-desc">Eggplant, zucchini, onions, cherry tomatoes, napoletana sauce</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$10</span><button class="add-to-cart cart-plus-btn" data-id="pasta-napoletana" data-name="Napoletana Veg Pasta" data-price="10" data-category="Pasta" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- MAINS & GRILL + SIDES                                             -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="mains" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">
-      <div class="mb-9">
-        <h2 class="font-display text-2xl sm:text-3xl tracking-wide text-[#2F3D1C] mb-4">Mains &amp; Grill</h2>
-        <div class="leaf-divider w-12 mb-4"></div>
-        <p class="text-xs text-[#4A5F2A]/65">Mains come with a choice of sadza, rice or chips</p>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16 mb-14">
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Lamb Chops</p><p class="mi-desc">Grilled garlic and herb lamb chops, sautéed carrots with mash and cranberry sauce</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$15</span><button class="add-to-cart cart-plus-btn" data-id="lamb-chops" data-name="Lamb Chops" data-price="15" data-category="Mains" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Steak, Egg &amp; Chips</p><p class="mi-desc">T-bone steak, fried egg and chips</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$14</span><button class="add-to-cart cart-plus-btn" data-id="steak-egg-chips" data-name="Steak, Egg & Chips" data-price="14" data-category="Mains" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Grilled Chicken ¼</p><p class="mi-desc">Flame-grilled chicken, available in lemon-herb or BBQ — quarter</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$8</span><button class="add-to-cart cart-plus-btn" data-id="grilled-chicken-quarter" data-name="Grilled Chicken (¼)" data-price="8" data-category="Mains" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Grilled Chicken ½</p><p class="mi-desc">Flame-grilled chicken, available in lemon-herb or BBQ — half</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$14</span><button class="add-to-cart cart-plus-btn" data-id="grilled-chicken-half" data-name="Grilled Chicken (½)" data-price="14" data-category="Mains" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Beef Meatballs</p><p class="mi-desc">Meatballs in gravy with mash, sautéed carrots and cranberry sauce</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$13</span><button class="add-to-cart cart-plus-btn" data-id="beef-meatballs" data-name="Beef Meatballs" data-price="13" data-category="Mains" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Chicken Schnitzel</p><p class="mi-desc">With mushroom sauce or tartar sauce</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="chicken-schnitzel" data-name="Chicken Schnitzel" data-price="12" data-category="Mains" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Slow-Braised Beef</p><p class="mi-desc">Braised beef with carrots, onion and mash</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$12</span><button class="add-to-cart cart-plus-btn" data-id="braised-beef" data-name="Slow-Braised Beef" data-price="12" data-category="Mains" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">BBQ Ribs — Half Rack</p><p class="mi-desc">Slow-cooked BBQ ribs, half rack</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$10</span><button class="add-to-cart cart-plus-btn" data-id="bbq-ribs-half" data-name="BBQ Ribs (Half Rack)" data-price="10" data-category="Mains" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Grilled Fish</p><p class="mi-desc">Grilled hake with lemon and herb</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$11</span><button class="add-to-cart cart-plus-btn" data-id="grilled-fish" data-name="Grilled Fish" data-price="11" data-category="Mains" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">BBQ Ribs — Full Rack</p><p class="mi-desc">Slow-cooked BBQ ribs, full rack</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$18</span><button class="add-to-cart cart-plus-btn" data-id="bbq-ribs-full" data-name="BBQ Ribs (Full Rack)" data-price="18" data-category="Mains" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Chicken Wings</p><p class="mi-desc">6x chicken wings served with fries</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$14</span><button class="add-to-cart cart-plus-btn" data-id="chicken-wings" data-name="Chicken Wings" data-price="14" data-category="Mains" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Sides sub-section -->
-      <div class="pt-10 border-t border-olive-deep/8">
-        <h3 class="font-display text-xl tracking-wide text-[#2F3D1C] mb-6">Sides</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-8">
-
-          <div class="drink-item">
-            <span class="drink-name">Fries</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$2</span><button class="add-to-cart cart-plus-btn" data-id="fries" data-name="Fries" data-price="2" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-          <div class="drink-item">
-            <span class="drink-name">Sweet Potato Fries</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="sweet-potato-fries" data-name="Sweet Potato Fries" data-price="3" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-          <div class="drink-item">
-            <span class="drink-name">Rice</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$2</span><button class="add-to-cart cart-plus-btn" data-id="rice" data-name="Rice" data-price="2" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-          <div class="drink-item">
-            <span class="drink-name">Fried Rice</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="fried-rice" data-name="Fried Rice" data-price="3" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-          <div class="drink-item">
-            <span class="drink-name">Sadza</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$1</span><button class="add-to-cart cart-plus-btn" data-id="sadza" data-name="Sadza" data-price="1" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-          <div class="drink-item">
-            <span class="drink-name">Mashed Potato</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$2</span><button class="add-to-cart cart-plus-btn" data-id="mashed-potato" data-name="Mashed Potato" data-price="2" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-          <div class="drink-item">
-            <span class="drink-name">Grilled Veggies</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$2</span><button class="add-to-cart cart-plus-btn" data-id="grilled-veggies" data-name="Grilled Veggies" data-price="2" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-          <div class="drink-item">
-            <span class="drink-name">Side Salad</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$2</span><button class="add-to-cart cart-plus-btn" data-id="side-salad" data-name="Side Salad" data-price="2" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-          <div class="drink-item">
-            <span class="drink-name">Onion Rings</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="onion-rings" data-name="Onion Rings" data-price="3" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-          <div class="drink-item">
-            <span class="drink-name">Coleslaw</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$2</span><button class="add-to-cart cart-plus-btn" data-id="coleslaw" data-name="Coleslaw" data-price="2" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-          <div class="drink-item">
-            <span class="drink-name">Cabbage Slaw</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$2</span><button class="add-to-cart cart-plus-btn" data-id="cabbage-slaw" data-name="Cabbage Slaw" data-price="2" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-          <div class="drink-item">
-            <span class="drink-name">Garlic Bread</span>
-            <div class="flex items-center gap-2"><span class="drink-price">$4</span><button class="add-to-cart cart-plus-btn" data-id="garlic-bread" data-name="Garlic Bread" data-price="4" data-category="Sides" aria-label="Add">+</button></div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- FIRE & FEAST                                                       -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="feasts" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">
-      <div class="bg-[#2F3D1C] rounded-sm p-8 sm:p-12 text-cream-light">
-        <p class="text-[10px] tracking-[0.3em] uppercase text-terracotta font-semibold mb-2">Available Thursday – Sunday</p>
-        <h2 class="font-display text-2xl sm:text-3xl tracking-wide text-cream-light mb-2">Fire &amp; Feast</h2>
-        <p class="text-cream-light/50 text-xs mb-8 leading-relaxed">Gather around and celebrate. These sharing plates are designed for the table.</p>
-        <div class="h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent mb-10"></div>
-
-        <div class="grid sm:grid-cols-3 gap-6">
-
-          <div class="bg-white/5 rounded-sm p-6 border border-cream-light/8 flex flex-col">
-            <p class="text-[10px] tracking-[0.2em] uppercase text-terracotta/80 font-semibold mb-2">Serves 4–6</p>
-            <h3 class="font-display text-lg text-cream-light mb-3">Family Braai Pack</h3>
-            <p class="text-xs text-cream-light/55 leading-relaxed flex-1 mb-5">Flame-grilled chicken, ribs, boerewors, wings, sadza, grilled veg, coleslaw, relish and garlic bread</p>
-            <div class="flex items-center justify-between">
-              <span class="font-display text-2xl text-gold">$70</span>
-              <button class="add-to-cart cart-plus-btn-light" data-id="braai-pack" data-name="Family Braai Pack" data-price="70" data-category="Fire & Feast" aria-label="Add">+</button>
-            </div>
-          </div>
-
-          <div class="bg-white/5 rounded-sm p-6 border border-cream-light/8 flex flex-col">
-            <p class="text-[10px] tracking-[0.2em] uppercase text-terracotta/80 font-semibold mb-2">Serves 2–4</p>
-            <h3 class="font-display text-lg text-cream-light mb-3">Kori Chisanyama</h3>
-            <p class="text-xs text-cream-light/55 leading-relaxed flex-1 mb-5">Steak strips, boerewors, flame-grilled chicken, sadza, chakalaka, relish and roasted veg</p>
-            <div class="flex items-center justify-between">
-              <span class="font-display text-2xl text-gold">$40</span>
-              <button class="add-to-cart cart-plus-btn-light" data-id="kori-chisanyama" data-name="Kori Chisanyama" data-price="40" data-category="Fire & Feast" aria-label="Add">+</button>
-            </div>
-          </div>
-
-          <div class="bg-white/5 rounded-sm p-6 border border-cream-light/8 flex flex-col">
-            <p class="text-[10px] tracking-[0.2em] uppercase text-terracotta/80 font-semibold mb-2">Serves 4</p>
-            <h3 class="font-display text-lg text-cream-light mb-3">Kori Feast Board</h3>
-            <p class="text-xs text-cream-light/55 leading-relaxed flex-1 mb-5">Ribs, crispy chicken strips, chicken skewers, grilled fish, couscous salad, sweet potato fries, garlic bread and dessert bites</p>
-            <div class="flex items-center justify-between">
-              <span class="font-display text-2xl text-gold">$60</span>
-              <button class="add-to-cart cart-plus-btn-light" data-id="feast-board" data-name="Kori Feast Board" data-price="60" data-category="Fire & Feast" aria-label="Add">+</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- DESSERTS                                                           -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="desserts" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">
-      <div class="mb-9">
-        <h2 class="font-display text-2xl sm:text-3xl tracking-wide text-[#2F3D1C] mb-4">Desserts</h2>
-        <div class="leaf-divider w-12"></div>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16">
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Basque Cheesecake</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$6</span><button class="add-to-cart cart-plus-btn" data-id="basque-cheesecake" data-name="Basque Cheesecake" data-price="6" data-category="Desserts" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Affogato</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$4</span><button class="add-to-cart cart-plus-btn" data-id="affogato" data-name="Affogato" data-price="4" data-category="Desserts" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Brownie &amp; Ice Creams</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$5</span><button class="add-to-cart cart-plus-btn" data-id="brownie-ice-cream" data-name="Brownie & Ice Creams" data-price="5" data-category="Desserts" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Banana Loaf Dessert</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$5</span><button class="add-to-cart cart-plus-btn" data-id="banana-loaf-dessert" data-name="Banana Loaf Dessert" data-price="5" data-category="Desserts" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Malva &amp; Custard</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$4</span><button class="add-to-cart cart-plus-btn" data-id="malva-custard" data-name="Malva & Custard" data-price="4" data-category="Desserts" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Ice Cream Trio</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$5</span><button class="add-to-cart cart-plus-btn" data-id="ice-cream-trio" data-name="Ice Cream Trio" data-price="5" data-category="Desserts" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-        <div class="menu-item">
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1"><p class="mi-name">Waffles &amp; Ice Cream</p></div>
-            <div class="mi-price-wrap"><span class="mi-price">$5</span><button class="add-to-cart cart-plus-btn" data-id="waffles-ice-cream" data-name="Waffles & Ice Cream" data-price="5" data-category="Desserts" aria-label="Add">+</button></div>
-          </div>
-        </div>
-
-      </div>
-
-      <p class="mt-6 text-xs text-[#4A5F2A]/65 italic">Ask our team for today's selection of freshly baked cakes and pastries.</p>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <!-- DRINKS                                                             -->
-    <!-- ══════════════════════════════════════════════════════════════════ -->
-    <section id="drinks" class="menu-section py-14 sm:py-16">
-      <div class="mb-9">
-        <h2 class="font-display text-2xl sm:text-3xl tracking-wide text-[#2F3D1C] mb-4">Drinks</h2>
-        <div class="leaf-divider w-12"></div>
-      </div>
-
-      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16">
-
-        <!-- Left column: Hot Drinks + Tea -->
-        <div class="space-y-10">
-
-          <!-- Hot Drinks -->
-          <div>
-            <h3 class="font-display text-base tracking-wide text-[#2F3D1C] mb-5">Hot Drinks</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-0">
-              <div class="drink-item"><span class="drink-name">Espresso (Single)</span><div class="flex items-center gap-2"><span class="drink-price">$1</span><button class="add-to-cart cart-plus-btn" data-id="espresso-single" data-name="Espresso (Single)" data-price="1" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Espresso (Double)</span><div class="flex items-center gap-2"><span class="drink-price">$2</span><button class="add-to-cart cart-plus-btn" data-id="espresso-double" data-name="Espresso (Double)" data-price="2" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Americano</span><div class="flex items-center gap-2"><span class="drink-price">$2</span><button class="add-to-cart cart-plus-btn" data-id="americano" data-name="Americano" data-price="2" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Cappuccino</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="cappuccino" data-name="Cappuccino" data-price="3" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Café Latte</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="cafe-latte" data-name="Café Latte" data-price="3" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Flat White</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="flat-white" data-name="Flat White" data-price="3" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Cortado</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="cortado" data-name="Cortado" data-price="3" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Mocha</span><div class="flex items-center gap-2"><span class="drink-price">$4</span><button class="add-to-cart cart-plus-btn" data-id="mocha" data-name="Mocha" data-price="4" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Hot Chocolate</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="hot-choc" data-name="Hot Chocolate" data-price="3" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">White Hot Choc</span><div class="flex items-center gap-2"><span class="drink-price">$4</span><button class="add-to-cart cart-plus-btn" data-id="white-hot-choc" data-name="White Hot Choc" data-price="4" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Chai Latte</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="chai-latte" data-name="Chai Latte" data-price="3" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Spiced Chai</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="spiced-chai" data-name="Spiced Chai" data-price="3" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Coconut Matcha</span><div class="flex items-center gap-2"><span class="drink-price">$4</span><button class="add-to-cart cart-plus-btn" data-id="coconut-matcha" data-name="Coconut Matcha" data-price="4" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Red Espresso</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="red-espresso" data-name="Red Espresso" data-price="3" data-category="Hot Drinks" aria-label="Add">+</button></div></div>
-            </div>
-            <p class="text-xs text-[#4A5F2A]/60 mt-4"><span class="font-semibold text-[#2F3D1C]/70">Add syrup:</span> Vanilla · Caramel · Hazelnut · Salted Caramel</p>
-          </div>
-
-          <!-- Tea -->
-          <div>
-            <div class="flex items-baseline gap-3 mb-4">
-              <h3 class="font-display text-base tracking-wide text-[#2F3D1C]">Tea</h3>
-              <span class="text-xs text-[#4A5F2A]/65 font-medium">$2 each</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <button class="add-to-cart pill-btn" data-id="rooibos-tea" data-name="Rooibos Tea" data-price="2" data-category="Tea">Rooibos +</button>
-              <button class="add-to-cart pill-btn" data-id="five-roses-tea" data-name="Five Roses Tea" data-price="2" data-category="Tea">Five Roses +</button>
-              <button class="add-to-cart pill-btn" data-id="mint-tea" data-name="Mint Tea" data-price="2" data-category="Tea">Mint +</button>
-              <button class="add-to-cart pill-btn" data-id="ginger-orange-tea" data-name="Ginger & Orange Tea" data-price="2" data-category="Tea">Fresh Ginger &amp; Orange +</button>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Right column: Iced + Cold & Blended -->
-        <div class="space-y-10">
-
-          <!-- Iced Drinks -->
-          <div>
-            <h3 class="font-display text-base tracking-wide text-[#2F3D1C] mb-5">Iced Drinks</h3>
-            <div>
-              <div class="drink-item"><span class="drink-name">Iced Americano</span><div class="flex items-center gap-2"><span class="drink-price">$2</span><button class="add-to-cart cart-plus-btn" data-id="iced-americano" data-name="Iced Americano" data-price="2" data-category="Iced Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Iced Latte</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="iced-latte" data-name="Iced Latte" data-price="3" data-category="Iced Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Iced Chocolate</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="iced-chocolate" data-name="Iced Chocolate" data-price="3" data-category="Iced Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Iced Chai Latte</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="iced-chai-latte" data-name="Iced Chai Latte" data-price="3" data-category="Iced Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Iced Spiced Chai</span><div class="flex items-center gap-2"><span class="drink-price">$3</span><button class="add-to-cart cart-plus-btn" data-id="iced-spiced-chai" data-name="Iced Spiced Chai" data-price="3" data-category="Iced Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Iced Mocha</span><div class="flex items-center gap-2"><span class="drink-price">$4</span><button class="add-to-cart cart-plus-btn" data-id="iced-mocha" data-name="Iced Mocha" data-price="4" data-category="Iced Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">White Choc Iced</span><div class="flex items-center gap-2"><span class="drink-price">$4</span><button class="add-to-cart cart-plus-btn" data-id="white-choc-iced" data-name="White Choc Iced" data-price="4" data-category="Iced Drinks" aria-label="Add">+</button></div></div>
-              <div class="drink-item"><span class="drink-name">Coconut Matcha Iced</span><div class="flex items-center gap-2"><span class="drink-price">$4</span><button class="add-to-cart cart-plus-btn" data-id="iced-coconut-matcha" data-name="Coconut Matcha Iced" data-price="4" data-category="Iced Drinks" aria-label="Add">+</button></div></div>
-            </div>
-          </div>
-
-          <!-- Iced Teas -->
-          <div>
-            <div class="flex items-baseline gap-3 mb-4">
-              <h3 class="font-display text-base tracking-wide text-[#2F3D1C]">Iced Teas</h3>
-              <span class="text-xs text-[#4A5F2A]/65 font-medium">$3 each</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <button class="add-to-cart pill-btn" data-id="iced-tea-berry" data-name="Berry Iced Tea" data-price="3" data-category="Iced Teas">Berry +</button>
-              <button class="add-to-cart pill-btn" data-id="iced-tea-peach" data-name="Peach Iced Tea" data-price="3" data-category="Iced Teas">Peach +</button>
-              <button class="add-to-cart pill-btn" data-id="iced-tea-lemon" data-name="Lemon Iced Tea" data-price="3" data-category="Iced Teas">Lemon +</button>
-              <button class="add-to-cart pill-btn" data-id="iced-tea-rooibos" data-name="Rooibos Iced Tea" data-price="3" data-category="Iced Teas">Rooibos +</button>
-            </div>
-          </div>
-
-          <!-- Milkshakes -->
-          <div>
-            <div class="flex items-baseline gap-3 mb-4">
-              <h3 class="font-display text-base tracking-wide text-[#2F3D1C]">Milkshakes</h3>
-              <span class="text-xs text-[#4A5F2A]/65 font-medium">$5 each</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <button class="add-to-cart pill-btn" data-id="shake-strawberry" data-name="Strawberry Milkshake" data-price="5" data-category="Milkshakes">Strawberry +</button>
-              <button class="add-to-cart pill-btn" data-id="shake-chocolate" data-name="Chocolate Milkshake" data-price="5" data-category="Milkshakes">Chocolate +</button>
-              <button class="add-to-cart pill-btn" data-id="shake-vanilla" data-name="Vanilla Milkshake" data-price="5" data-category="Milkshakes">Vanilla +</button>
-              <button class="add-to-cart pill-btn" data-id="shake-blueberry" data-name="Blueberry Milkshake" data-price="5" data-category="Milkshakes">Blueberry +</button>
-              <button class="add-to-cart pill-btn" data-id="shake-banana" data-name="Banana Milkshake" data-price="5" data-category="Milkshakes">Banana +</button>
-              <button class="add-to-cart pill-btn" data-id="shake-salted-caramel" data-name="Salted Caramel Milkshake" data-price="5" data-category="Milkshakes">Salted Caramel +</button>
-            </div>
-          </div>
-
-          <!-- Freezos -->
-          <div>
-            <div class="flex items-baseline gap-3 mb-4">
-              <h3 class="font-display text-base tracking-wide text-[#2F3D1C]">Freezos</h3>
-              <span class="text-xs text-[#4A5F2A]/65 font-medium">$3 each</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <button class="add-to-cart pill-btn" data-id="freezo-coffee" data-name="Coffee Freezo" data-price="3" data-category="Freezos">Coffee +</button>
-              <button class="add-to-cart pill-btn" data-id="freezo-mango" data-name="Mango Freezo" data-price="3" data-category="Freezos">Mango +</button>
-              <button class="add-to-cart pill-btn" data-id="freezo-lemon" data-name="Lemon Freezo" data-price="3" data-category="Freezos">Lemon +</button>
-              <button class="add-to-cart pill-btn" data-id="freezo-peach" data-name="Peach Freezo" data-price="3" data-category="Freezos">Peach +</button>
-              <button class="add-to-cart pill-btn" data-id="freezo-berry" data-name="Berry Freezo" data-price="3" data-category="Freezos">Berry +</button>
-              <button class="add-to-cart pill-btn" data-id="freezo-passion" data-name="Passion Fruit Freezo" data-price="3" data-category="Freezos">Passion Fruit +</button>
-              <button class="add-to-cart pill-btn" data-id="freezo-mocha" data-name="Mocha Freezo" data-price="3" data-category="Freezos">Mocha +</button>
-            </div>
-          </div>
-
-          <!-- Smoothies -->
-          <div>
-            <div class="flex items-baseline gap-3 mb-4">
-              <h3 class="font-display text-base tracking-wide text-[#2F3D1C]">Smoothies</h3>
-              <span class="text-xs text-[#4A5F2A]/65">Ask for pricing</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <span class="pill-display">Mixed Berry</span>
-              <span class="pill-display">Strawberry</span>
-              <span class="pill-display">Banana PB</span>
-              <span class="pill-display">Greens</span>
-              <span class="pill-display">Choc Espresso</span>
-            </div>
-          </div>
-
-          <p class="text-xs text-[#4A5F2A]/60 italic">Juices and soft drinks also available — ask your server.</p>
-
-        </div>
-      </div>
-    </section>
-
+    </div>
   </main>
 
   <!-- ── Footer ─────────────────────────────────────────────────────────── -->
@@ -1148,7 +365,6 @@
       localStorage.setItem('kori-theme', dark ? 'dark' : 'light');
     }
 
-    // Apply saved or system preference immediately
     var saved = localStorage.getItem('kori-theme');
     var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (saved === 'dark' || (!saved && prefersDark)) setTheme(true);
@@ -1156,7 +372,7 @@
     var toggle = document.getElementById('theme-toggle');
     if (toggle) toggle.addEventListener('click', function () { setTheme(!html.classList.contains('dark')); });
 
-    var menuBtn  = document.getElementById('mobile-menu-btn');
+    var menuBtn    = document.getElementById('mobile-menu-btn');
     var mobileMenu = document.getElementById('mobile-menu');
     if (menuBtn && mobileMenu) {
       menuBtn.addEventListener('click', function () {
@@ -1257,37 +473,339 @@
     renderCart();
   })();
 
-  // ── Tab scroll-spy ───────────────────────────────────────────────────────────
+  // ── Menu Loader ───────────────────────────────────────────────────────────────
   (function () {
-    var sections    = document.querySelectorAll('.menu-section');
-    var tabs        = document.querySelectorAll('.tab-link');
-    var tabScrollEl = document.querySelector('.tab-scroll');
-    if (!sections.length || !tabs.length) return;
+    var SUPABASE_URL = 'https://rwmlrwjkyqrnwlfkzuoo.supabase.co';
+    var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3bWxyd2preXFybndsZmt6dW9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNTY5MDMsImV4cCI6MjA4NDgzMjkwM30.hjjicIiIIeXR0KM-vd-aGolqp87bowgTTLR9n_3hHPo';
+    var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Only scroll the tab bar horizontally — never touches page scroll position
-    function scrollTabIntoView(tab) {
-      if (!tabScrollEl || !tab) return;
-      var left = tab.offsetLeft - (tabScrollEl.clientWidth / 2) + (tab.offsetWidth / 2);
-      tabScrollEl.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+    function esc(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
-    function setActiveTab(id) {
-      tabs.forEach(function (t) { t.classList.remove('active'); });
-      var active = document.querySelector('.tab-link[href="#' + id + '"]');
-      if (active) { active.classList.add('active'); scrollTabIntoView(active); }
+    function fmtPrice(p) {
+      if (p == null) return '';
+      var n = parseFloat(p);
+      return '$' + (Number.isInteger(n) ? n : n.toFixed(2));
     }
 
-    var obs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) setActiveTab(entry.target.id);
-      });
-    }, { rootMargin: '-15% 0px -80% 0px', threshold: 0 });
+    function renderStandard(item, catName) {
+      return '<div class="menu-item">' +
+        '<div class="flex items-start justify-between gap-4">' +
+        '<div class="flex-1"><p class="mi-name">' + esc(item.name) + '</p>' +
+        (item.description ? '<p class="mi-desc">' + esc(item.description) + '</p>' : '') +
+        '</div>' +
+        '<div class="mi-price-wrap"><span class="mi-price">' + fmtPrice(item.price) + '</span>' +
+        '<button class="add-to-cart cart-plus-btn" data-id="' + esc(item.id) + '" data-name="' + esc(item.name) + '" data-price="' + esc(item.price) + '" data-category="' + esc(catName) + '" aria-label="Add">+</button>' +
+        '</div></div></div>';
+    }
 
-    sections.forEach(function (s) { obs.observe(s); });
+    function renderCompact(item, catName) {
+      return '<div class="drink-item">' +
+        '<span class="drink-name">' + esc(item.name) + '</span>' +
+        '<div class="flex items-center gap-2"><span class="drink-price">' + fmtPrice(item.price) + '</span>' +
+        '<button class="add-to-cart cart-plus-btn" data-id="' + esc(item.id) + '" data-name="' + esc(item.name) + '" data-price="' + esc(item.price) + '" data-category="' + esc(catName) + '" aria-label="Add">+</button>' +
+        '</div></div>';
+    }
 
-    // Tab click: calculate offset from live header/tabbar heights so scroll lands correctly
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function (e) {
+    function renderPill(item, catName) {
+      return '<button class="add-to-cart pill-btn" data-id="' + esc(item.id) + '" data-name="' + esc(item.name) + '" data-price="' + esc(item.price) + '" data-category="' + esc(catName) + '">' + esc(item.name) + ' +</button>';
+    }
+
+    function renderPillDisplay(item) {
+      return '<span class="pill-display">' + esc(item.name) + '</span>';
+    }
+
+    function renderCategoryHeader(cat) {
+      return '<div class="mb-9">' +
+        (cat.note && cat.slug !== 'mains' ? '<p class="text-[10px] tracking-[0.3em] uppercase text-terracotta font-semibold mb-1.5">' + esc(cat.note) + '</p>' : '') +
+        '<h2 class="font-display text-2xl sm:text-3xl tracking-wide text-[#2F3D1C] dark:text-[#F5F0E6] mb-4">' + esc(cat.name) + '</h2>' +
+        '<div class="leaf-divider w-12"></div>' +
+        (cat.slug === 'mains' && cat.note ? '<p class="text-xs text-[#4A5F2A]/65 dark:text-[#F5F0E6]/60 mt-4">' + esc(cat.note) + '</p>' : '') +
+        '</div>';
+    }
+
+    function buildSection(cat, items) {
+      var slug = cat.slug;
+      var catName = cat.name;
+
+      items = items.filter(function (i) { return i.available !== false; });
+
+      // ── Feasts ──────────────────────────────────────────────────────────
+      if (slug === 'feasts') {
+        var cards = items.map(function (item) {
+          return '<div class="bg-white/5 rounded-sm p-6 border border-cream-light/8 flex flex-col">' +
+            (item.description ? '<p class="text-[10px] tracking-[0.2em] uppercase text-terracotta/80 font-semibold mb-2">' + esc(item.description) + '</p>' : '') +
+            '<h3 class="font-display text-lg text-cream-light mb-3">' + esc(item.name) + '</h3>' +
+            '<div class="flex items-center justify-between mt-auto pt-5">' +
+            '<span class="font-display text-2xl text-gold">' + fmtPrice(item.price) + '</span>' +
+            '<button class="add-to-cart cart-plus-btn-light" data-id="' + esc(item.id) + '" data-name="' + esc(item.name) + '" data-price="' + esc(item.price) + '" data-category="' + esc(catName) + '" aria-label="Add">+</button>' +
+            '</div></div>';
+        }).join('');
+
+        return '<section id="' + esc(slug) + '" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">' +
+          '<div class="bg-[#2F3D1C] rounded-sm p-8 sm:p-12 text-cream-light">' +
+          (cat.note ? '<p class="text-[10px] tracking-[0.3em] uppercase text-terracotta font-semibold mb-2">' + esc(cat.note) + '</p>' : '') +
+          '<h2 class="font-display text-2xl sm:text-3xl tracking-wide text-cream-light mb-2">' + esc(catName) + '</h2>' +
+          '<p class="text-cream-light/50 text-xs mb-8 leading-relaxed">Gather around and celebrate. These sharing plates are designed for the table.</p>' +
+          '<div class="h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent mb-10"></div>' +
+          '<div class="grid sm:grid-cols-3 gap-6">' + cards + '</div>' +
+          '</div></section>';
+      }
+
+      // ── Drinks ──────────────────────────────────────────────────────────
+      if (slug === 'drinks') {
+        var hot   = items.filter(function (i) { return i.subcategory === 'hot'; });
+        var tea   = items.filter(function (i) { return i.subcategory === 'tea'; });
+        var iced  = items.filter(function (i) { return i.subcategory === 'iced'; });
+        var icedT = items.filter(function (i) { return i.subcategory === 'iced_tea'; });
+        var shake = items.filter(function (i) { return i.subcategory === 'milkshake'; });
+        var freez = items.filter(function (i) { return i.subcategory === 'freezo'; });
+        var smoot = items.filter(function (i) { return i.subcategory === 'smoothie'; });
+
+        function pillGroupHead(groupItems, fallbackLabel) {
+          if (!groupItems.length) return '';
+          var label = groupItems[0].pill_group || fallbackLabel;
+          var price = groupItems[0].price;
+          var priceLabel = price != null ? fmtPrice(price) + ' each' : 'Ask for pricing';
+          return '<div class="flex items-baseline gap-3 mb-4">' +
+            '<h3 class="font-display text-base tracking-wide text-[#2F3D1C] dark:text-[#F5F0E6]">' + esc(label) + '</h3>' +
+            '<span class="text-xs text-[#4A5F2A]/65 dark:text-[#F5F0E6]/60 font-medium">' + esc(priceLabel) + '</span>' +
+            '</div>';
+        }
+
+        var leftCol = '<div class="space-y-10">';
+
+        if (hot.length) {
+          leftCol += '<div>' +
+            '<h3 class="font-display text-base tracking-wide text-[#2F3D1C] dark:text-[#F5F0E6] mb-5">Hot Drinks</h3>' +
+            hot.map(function (i) { return renderCompact(i, catName); }).join('') +
+            '<p class="text-xs text-[#4A5F2A]/60 dark:text-[#F5F0E6]/60 mt-4"><span class="font-semibold text-[#2F3D1C]/70 dark:text-[#F5F0E6]/80">Add syrup:</span> Vanilla \xb7 Caramel \xb7 Hazelnut \xb7 Salted Caramel</p>' +
+            '</div>';
+        }
+
+        if (tea.length) {
+          leftCol += '<div>' +
+            pillGroupHead(tea, 'Tea') +
+            '<div class="flex flex-wrap gap-2">' +
+            tea.map(function (i) { return renderPill(i, catName); }).join('') +
+            '</div></div>';
+        }
+
+        leftCol += '</div>';
+
+        var rightCol = '<div class="space-y-10">';
+
+        if (iced.length) {
+          rightCol += '<div>' +
+            '<h3 class="font-display text-base tracking-wide text-[#2F3D1C] dark:text-[#F5F0E6] mb-5">Iced Drinks</h3>' +
+            iced.map(function (i) { return renderCompact(i, catName); }).join('') +
+            '</div>';
+        }
+
+        if (icedT.length) {
+          rightCol += '<div>' +
+            pillGroupHead(icedT, 'Iced Teas') +
+            '<div class="flex flex-wrap gap-2">' +
+            icedT.map(function (i) { return renderPill(i, catName); }).join('') +
+            '</div></div>';
+        }
+
+        if (shake.length) {
+          rightCol += '<div>' +
+            pillGroupHead(shake, 'Milkshakes') +
+            '<div class="flex flex-wrap gap-2">' +
+            shake.map(function (i) { return renderPill(i, catName); }).join('') +
+            '</div></div>';
+        }
+
+        if (freez.length) {
+          rightCol += '<div>' +
+            pillGroupHead(freez, 'Freezos') +
+            '<div class="flex flex-wrap gap-2">' +
+            freez.map(function (i) { return renderPill(i, catName); }).join('') +
+            '</div></div>';
+        }
+
+        if (smoot.length) {
+          rightCol += '<div>' +
+            '<div class="flex items-baseline gap-3 mb-4">' +
+            '<h3 class="font-display text-base tracking-wide text-[#2F3D1C] dark:text-[#F5F0E6]">' + esc(smoot[0].pill_group || 'Smoothies') + '</h3>' +
+            '<span class="text-xs text-[#4A5F2A]/65 dark:text-[#F5F0E6]/60 font-medium">Ask for pricing</span>' +
+            '</div>' +
+            '<div class="flex flex-wrap gap-2">' +
+            smoot.map(function (i) { return renderPillDisplay(i); }).join('') +
+            '</div></div>';
+        }
+
+        rightCol += '<p class="text-xs text-[#4A5F2A]/60 dark:text-[#F5F0E6]/60 italic">Juices and soft drinks also available — ask your server.</p>';
+        rightCol += '</div>';
+
+        return '<section id="' + esc(slug) + '" class="menu-section py-14 sm:py-16">' +
+          renderCategoryHeader(cat) +
+          '<div class="grid lg:grid-cols-2 gap-12 lg:gap-16">' +
+          leftCol + rightCol +
+          '</div></section>';
+      }
+
+      // ── Mains ────────────────────────────────────────────────────────────
+      if (slug === 'mains') {
+        var mainItems = items.filter(function (i) { return !i.subcategory || i.subcategory !== 'sides'; });
+        var sideItems = items.filter(function (i) { return i.subcategory === 'sides'; });
+
+        var sidesHtml = '';
+        if (sideItems.length) {
+          sidesHtml = '<div class="pt-10 border-t border-olive-deep/12">' +
+            '<h3 class="font-display text-xl tracking-wide text-[#2F3D1C] dark:text-[#F5F0E6] mb-6">Sides</h3>' +
+            '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-8">' +
+            sideItems.map(function (i) { return renderCompact(i, 'Sides'); }).join('') +
+            '</div></div>';
+        }
+
+        return '<section id="' + esc(slug) + '" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">' +
+          renderCategoryHeader(cat) +
+          '<div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16 mb-14">' +
+          mainItems.map(function (i) { return renderStandard(i, catName); }).join('') +
+          '</div>' +
+          sidesHtml +
+          '</section>';
+      }
+
+      // ── Breakfast ─────────────────────────────────────────────────────────
+      if (slug === 'breakfast') {
+        return '<section id="' + esc(slug) + '" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">' +
+          renderCategoryHeader(cat) +
+          '<div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16">' +
+          items.map(function (i) { return renderStandard(i, catName); }).join('') +
+          '</div>' +
+          '<div class="mt-6 pt-5 border-t border-olive-deep/12 flex flex-wrap gap-x-8 gap-y-2 text-xs text-[#4A5F2A]/65 dark:text-[#F5F0E6]/60">' +
+          '<p><span class="font-semibold text-[#2F3D1C]/80 dark:text-[#F5F0E6]/80">Add-ons:</span> Bacon +$2 \xb7 Smoked Salmon +$4</p>' +
+          '<p><span class="font-semibold text-[#2F3D1C]/80 dark:text-[#F5F0E6]/80">Bread upgrade:</span> Sourdough +$1 \xb7 Croissant +$2</p>' +
+          '</div></section>';
+      }
+
+      // ── Burgers ───────────────────────────────────────────────────────────
+      if (slug === 'burgers') {
+        return '<section id="' + esc(slug) + '" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">' +
+          renderCategoryHeader(cat) +
+          '<div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16">' +
+          items.map(function (i) { return renderStandard(i, catName); }).join('') +
+          '</div>' +
+          '<p class="mt-5 text-xs text-[#4A5F2A]/65 dark:text-[#F5F0E6]/60">' +
+          '<span class="font-semibold text-[#2F3D1C]/70 dark:text-[#F5F0E6]/80">Burger extras:</span> Cheese \xb7 Double patty \xb7 Caramelised onion \xb7 Mushrooms \xb7 Bacon' +
+          '</p></section>';
+      }
+
+      // ── Desserts ──────────────────────────────────────────────────────────
+      if (slug === 'desserts') {
+        return '<section id="' + esc(slug) + '" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">' +
+          renderCategoryHeader(cat) +
+          '<div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16">' +
+          items.map(function (i) { return renderStandard(i, catName); }).join('') +
+          '</div>' +
+          '<p class="mt-6 text-xs text-[#4A5F2A]/65 dark:text-[#F5F0E6]/60 italic">Ask our team for today\'s selection of freshly baked cakes and pastries.</p>' +
+          '</section>';
+      }
+
+      // ── Standard grid (toasties, salads, pizza, pasta, etc.) ─────────────
+      return '<section id="' + esc(slug) + '" class="menu-section py-14 sm:py-16 border-b border-olive-deep/12">' +
+        renderCategoryHeader(cat) +
+        '<div class="grid md:grid-cols-2 gap-x-10 lg:gap-x-16">' +
+        items.map(function (i) {
+          var dt = i.display_type || 'standard';
+          if (dt === 'compact') return renderCompact(i, catName);
+          if (dt === 'pill') return renderPill(i, catName);
+          if (dt === 'pill_display') return renderPillDisplay(i);
+          return renderStandard(i, catName);
+        }).join('') +
+        '</div></section>';
+    }
+
+    async function loadMenu() {
+      var menuContent = document.getElementById('menu-content');
+      var tabScroll   = document.getElementById('tab-scroll');
+
+      try {
+        var results = await Promise.all([
+          sb.from('kori_menu_categories')
+            .select('*')
+            .eq('is_active', true)
+            .order('sort_order', { ascending: true }),
+          sb.from('kori_menu_items')
+            .select('*')
+            .eq('available', true)
+            .order('sort_order', { ascending: true })
+        ]);
+
+        var catRes  = results[0];
+        var itemRes = results[1];
+
+        if (catRes.error) throw catRes.error;
+        if (itemRes.error) throw itemRes.error;
+
+        var categories = catRes.data || [];
+        var allItems   = itemRes.data || [];
+
+        tabScroll.innerHTML = categories.map(function (cat) {
+          return '<a href="#' + esc(cat.slug) + '" class="tab-link">' + esc(cat.name) + '</a>';
+        }).join('');
+
+        var sectionsHtml = categories.map(function (cat) {
+          var catItems = allItems.filter(function (i) { return i.category_slug === cat.slug; });
+          return buildSection(cat, catItems);
+        }).join('');
+
+        menuContent.innerHTML = sectionsHtml;
+
+        initTabSpy();
+
+      } catch (err) {
+        menuContent.innerHTML = '<div class="py-20 text-center">' +
+          '<p class="text-[#4A5F2A]/60 dark:text-[#F5F0E6]/50 text-sm">Could not load the menu right now. Please refresh the page or ask a team member.</p>' +
+          '</div>';
+        console.error('Menu load error:', err);
+      }
+    }
+
+    loadMenu();
+
+    // ── Tab scroll-spy ────────────────────────────────────────────────────
+    function initTabSpy() {
+      var sections    = document.querySelectorAll('.menu-section');
+      var tabScrollEl = document.querySelector('.tab-scroll');
+      if (!sections.length) return;
+
+      function getTabs() { return document.querySelectorAll('.tab-link'); }
+
+      function scrollTabIntoView(tab) {
+        if (!tabScrollEl || !tab) return;
+        var left = tab.offsetLeft - (tabScrollEl.clientWidth / 2) + (tab.offsetWidth / 2);
+        tabScrollEl.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+      }
+
+      function setActiveTab(id) {
+        getTabs().forEach(function (t) { t.classList.remove('active'); });
+        var active = document.querySelector('.tab-link[href="#' + id + '"]');
+        if (active) { active.classList.add('active'); scrollTabIntoView(active); }
+      }
+
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) setActiveTab(entry.target.id);
+        });
+      }, { rootMargin: '-15% 0px -80% 0px', threshold: 0 });
+
+      sections.forEach(function (s) { obs.observe(s); });
+
+      tabScrollEl.addEventListener('click', function (e) {
+        var tab = e.target.closest('.tab-link');
+        if (!tab) return;
         e.preventDefault();
         var target = document.querySelector(tab.getAttribute('href'));
         if (!target) return;
@@ -1298,7 +816,8 @@
         window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
         setActiveTab(tab.getAttribute('href').slice(1));
       });
-    });
+    }
+
   })();
   </script>
 </body>
