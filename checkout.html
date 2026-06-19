@@ -30,6 +30,7 @@
       },
     };
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
@@ -49,9 +50,7 @@
       background-color: #FAF6F0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     }
-    input, select, textarea {
-      outline: none;
-    }
+    input, select, textarea { outline: none; }
     input:focus, select:focus, textarea:focus {
       border-color: #4A5F2A !important;
       box-shadow: 0 0 0 3px rgba(74, 95, 42, 0.12);
@@ -83,7 +82,7 @@
         <img src="logo2.png" alt="Kori Studio" class="h-10 w-auto object-contain" width="40" height="40" />
         <span class="font-display text-sm tracking-[0.25em] uppercase text-[#2F3D1C] hidden sm:block">Kori Studio</span>
       </a>
-      <a href="index.html#menu" class="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-[#4A5F2A] font-medium hover:text-[#2F3D1C] transition-colors">
+      <a href="menu.html" class="flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-[#4A5F2A] font-medium hover:text-[#2F3D1C] transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
@@ -176,13 +175,11 @@
         <div class="bg-[#1E2418] text-cream-light rounded-sm p-6 sm:p-8">
           <h2 class="font-display text-lg tracking-wide mb-5">Order Summary</h2>
 
-          <ul id="summary-list" class="space-y-3 mb-6">
-            <!-- Rendered by JS -->
-          </ul>
+          <ul id="summary-list" class="space-y-3 mb-6"></ul>
 
           <div id="summary-empty" class="text-center py-8 text-cream-light/35 text-sm">
             Your order is empty.<br>
-            <a href="index.html#menu" class="underline underline-offset-2 text-gold/70 hover:text-gold mt-1 inline-block">Go back to menu</a>
+            <a href="menu.html" class="underline underline-offset-2 text-gold/70 hover:text-gold mt-1 inline-block">Go back to menu</a>
           </div>
 
           <div id="summary-total-row" class="hidden border-t border-cream-light/10 pt-4 flex justify-between items-baseline">
@@ -206,7 +203,11 @@
 
   <script>
   (function () {
-    var CART_KEY = 'kori-cart';
+    var CART_KEY     = 'kori-cart';
+    var KORI_WA      = '263775090455';
+    var SUPABASE_URL = 'https://rwmlrwjkyqrnwlfkzuoo.supabase.co';
+    var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3bWxyd2preXFybndsZmt6dW9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNTY5MDMsImV4cCI6MjA4NDgzMjkwM30.hjjicIiIIeXR0KM-vd-aGolqp87bowgTTLR9n_3hHPo';
+    var sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
     function getCart() {
       try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch (e) { return []; }
@@ -215,24 +216,20 @@
       return items.reduce(function (s, i) { return s + i.price * i.qty; }, 0);
     }
 
-    // ── Populate pickup time slots ─────────────────────────────────────────
+    // ── Pickup time slots ──────────────────────────────────────────────────
     var pickupSelect = document.getElementById('pickup-time');
     var now = new Date();
-    var currentHour = now.getHours();
-    var currentMin = now.getMinutes();
-    // Opening hours: 8 AM – 9 PM (last order 8:30 PM)
+    var currentHour = now.getHours(), currentMin = now.getMinutes();
     var openHour = 8, closeHour = 21;
     var slots = [];
     for (var h = openHour; h < closeHour; h++) {
       [0, 30].forEach(function (m) {
-        // Skip slots in the past + less than 25 min from now
         var slotMinutes = h * 60 + m;
         var nowMinutes  = currentHour * 60 + currentMin + 25;
         if (slotMinutes >= nowMinutes) {
           var hDisp = h % 12 === 0 ? 12 : h % 12;
           var suffix = h < 12 ? 'AM' : 'PM';
-          var label = hDisp + ':' + (m === 0 ? '00' : '30') + ' ' + suffix;
-          slots.push({ value: h + ':' + (m === 0 ? '00' : '30'), label: label });
+          slots.push({ value: h + ':' + (m === 0 ? '00' : '30'), label: hDisp + ':' + (m === 0 ? '00' : '30') + ' ' + suffix });
         }
       });
     }
@@ -248,7 +245,7 @@
       });
     }
 
-    // ── Render order summary ───────────────────────────────────────────────
+    // ── Order summary ──────────────────────────────────────────────────────
     var summaryList     = document.getElementById('summary-list');
     var summaryEmpty    = document.getElementById('summary-empty');
     var summaryTotalRow = document.getElementById('summary-total-row');
@@ -276,16 +273,16 @@
     }
     renderSummary();
 
-    // ── Form validation & submission ───────────────────────────────────────
-    var form        = document.getElementById('checkout-form');
-    var nameInput   = document.getElementById('cust-name');
-    var phoneInput  = document.getElementById('cust-phone');
-    var timeSelect  = document.getElementById('pickup-time');
-    var nameErr     = document.getElementById('name-error');
-    var phoneErr    = document.getElementById('phone-error');
-    var timeErr     = document.getElementById('time-error');
-    var formErr     = document.getElementById('form-error');
-    var submitBtn   = document.getElementById('place-order-btn');
+    // ── Form submit ────────────────────────────────────────────────────────
+    var form       = document.getElementById('checkout-form');
+    var nameInput  = document.getElementById('cust-name');
+    var phoneInput = document.getElementById('cust-phone');
+    var timeSelect = document.getElementById('pickup-time');
+    var nameErr    = document.getElementById('name-error');
+    var phoneErr   = document.getElementById('phone-error');
+    var timeErr    = document.getElementById('time-error');
+    var formErr    = document.getElementById('form-error');
+    var submitBtn  = document.getElementById('place-order-btn');
 
     function showError(el) { el.classList.remove('hidden'); }
     function hideError(el) { el.classList.add('hidden'); }
@@ -293,49 +290,88 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var valid = true;
-
       hideError(nameErr); hideError(phoneErr); hideError(timeErr); hideError(formErr);
 
       var name  = nameInput.value.trim();
       var phone = phoneInput.value.trim().replace(/\s/g, '');
       var time  = timeSelect.value;
-
-      if (!name) { showError(nameErr); valid = false; }
-      if (!phone || !/^\d{9,10}$/.test(phone)) { showError(phoneErr); valid = false; }
-      if (!time) { showError(timeErr); valid = false; }
-
       var items = getCart();
+
+      if (!name)                               { showError(nameErr);  valid = false; }
+      if (!phone || !/^\d{9,10}$/.test(phone)) { showError(phoneErr); valid = false; }
+      if (!time)                               { showError(timeErr);  valid = false; }
       if (items.length === 0) {
         formErr.textContent = 'Your order is empty. Add items from the menu first.';
-        showError(formErr);
-        valid = false;
+        showError(formErr); valid = false;
       }
-
       if (!valid) { showError(formErr); return; }
 
-      // Build order object
+      submitBtn.textContent = 'Placing order…';
+      submitBtn.disabled = true;
+
       var orderNumber = 'KS-' + Date.now().toString(36).toUpperCase().slice(-6);
+      var fullPhone   = '+263' + phone;
+      var notes       = document.getElementById('order-notes').value.trim();
+      var total       = cartTotal(items);
+
       var order = {
         id:         orderNumber,
         name:       name,
-        phone:      '+263' + phone,
+        phone:      fullPhone,
         pickup:     time,
-        notes:      document.getElementById('order-notes').value.trim(),
+        notes:      notes,
         items:      items,
-        total:      cartTotal(items),
+        total:      total,
         created_at: new Date().toISOString(),
         status:     'new'
       };
 
-      // Store for confirmation page
+      // Persist for confirmation page & clear cart
       try { localStorage.setItem('kori-last-order', JSON.stringify(order)); } catch (ex) {}
-      // Clear cart
       localStorage.removeItem(CART_KEY);
 
-      // Redirect
-      submitBtn.textContent = 'Placing order…';
-      submitBtn.disabled = true;
-      window.location.href = 'confirmation.html';
+      // Format pickup time for WhatsApp message
+      var tp = time.split(':');
+      var th = parseInt(tp[0]), tm = tp[1] || '00';
+      var tSuffix = th < 12 ? 'AM' : 'PM';
+      var th12 = th % 12 === 0 ? 12 : th % 12;
+      var pickupLabel = th12 + ':' + tm + ' ' + tSuffix;
+
+      // Build WhatsApp message for kitchen
+      var itemLines = items.map(function (i) {
+        return '• ' + i.qty + '× ' + i.name + ' — $' + (i.price * i.qty).toFixed(2);
+      }).join('\n');
+
+      var waMsg =
+        '🧾 *NEW ORDER — ' + orderNumber + '*\n\n' +
+        '👤 ' + name + '\n' +
+        '📞 ' + fullPhone + '\n' +
+        '⏰ Pickup: ' + pickupLabel + '\n\n' +
+        '📦 *Items:*\n' + itemLines + '\n\n' +
+        '💰 *Total: $' + total.toFixed(2) + '*' +
+        (notes ? '\n\n📝 Notes: ' + notes : '');
+
+      // Save to Supabase (with 5 s timeout), then open WhatsApp + redirect
+      var dbSave = sb
+        ? sb.from('kori_orders').insert({
+            id:             orderNumber,
+            customer_name:  name,
+            customer_phone: fullPhone,
+            pickup_time:    time,
+            notes:          notes || null,
+            items:          items,
+            total:          total,
+            status:         'new'
+          })
+        : Promise.resolve();
+
+      Promise.race([
+        dbSave,
+        new Promise(function (resolve) { setTimeout(resolve, 5000); })
+      ]).catch(function () {}).finally(function () {
+        window.open('https://wa.me/' + KORI_WA + '?text=' + encodeURIComponent(waMsg), '_blank');
+        window.location.href = 'confirmation.html';
+      });
     });
 
   })();

@@ -508,6 +508,48 @@
     @keyframes toast-out {
       to { opacity: 0; transform: translateY(8px); }
     }
+
+    /* ── Orders view ─────────────────────────────────────── */
+    .status-badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.64rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .status-new       { background: rgba(217,119,6,0.12);   color: #B45309; }
+    .status-preparing { background: rgba(37,99,235,0.1);    color: #1D4ED8; }
+    .status-ready     { background: rgba(22,163,74,0.12);   color: #15803D; }
+    .status-collected { background: rgba(107,114,128,0.12); color: #4B5563; }
+    .status-cancelled { background: rgba(192,57,43,0.1);    color: #c0392b; }
+
+    .status-action-btn {
+      padding: 0.28rem 0.65rem;
+      border-radius: 3px;
+      font-size: 0.68rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif;
+      border: 1px solid rgba(74,95,42,0.25);
+      background: rgba(74,95,42,0.07);
+      color: #4A5F2A;
+      transition: all 0.15s;
+      white-space: nowrap;
+      margin-right: 0.3rem;
+    }
+    .status-action-btn:hover { background: #4A5F2A; color: #FAF6F0; border-color: #4A5F2A; }
+    .status-action-cancel {
+      border-color: rgba(192,57,43,0.2);
+      background: rgba(192,57,43,0.06);
+      color: #c0392b;
+    }
+    .status-action-cancel:hover { background: #c0392b; color: #fff; border-color: #c0392b; }
+
+    .order-items-cell { font-size: 0.75rem; color: rgba(47,61,28,0.6); max-width: 200px; }
+    .orders-refresh-note { font-size: 0.72rem; color: rgba(47,61,28,0.4); }
   </style>
 </head>
 <body>
@@ -538,12 +580,25 @@
     </div>
 
     <div class="admin-content">
-      <div class="content-header">
-        <h2 id="section-title">Items</h2>
-        <button class="add-btn" id="add-item-btn">+ Add Item</button>
+      <!-- Menu items panel -->
+      <div id="menu-panel">
+        <div class="content-header">
+          <h2 id="section-title">Items</h2>
+          <button class="add-btn" id="add-item-btn">+ Add Item</button>
+        </div>
+        <div class="table-wrap" id="items-wrap">
+          <div class="spinner-wrap"><div class="spinner"></div></div>
+        </div>
       </div>
-      <div class="table-wrap" id="items-wrap">
-        <div class="spinner-wrap"><div class="spinner"></div></div>
+      <!-- Orders panel -->
+      <div id="orders-panel" style="display:none;">
+        <div class="content-header">
+          <h2>Live Orders</h2>
+          <span class="orders-refresh-note">Auto-refreshes every 30 s</span>
+        </div>
+        <div class="table-wrap" id="orders-wrap">
+          <div class="spinner-wrap"><div class="spinner"></div></div>
+        </div>
       </div>
     </div>
 
@@ -694,6 +749,7 @@
     var categories = [];
     var currentCatSlug = null;
     var currentItems = [];
+    var ordersInterval = null;
 
     /* ── Init ──────────────────────────────────────────── */
     function init() {
@@ -713,9 +769,10 @@
       if (error) { toast('Failed to load categories: ' + error.message, 'error'); return; }
       categories = data || [];
 
-      tabsEl.innerHTML = categories.map(function (cat) {
-        return '<button class="cat-tab" data-slug="' + esc(cat.slug) + '">' + esc(cat.name) + '</button>';
-      }).join('');
+      tabsEl.innerHTML = '<button class="cat-tab" data-slug="__orders__">Orders</button>' +
+        categories.map(function (cat) {
+          return '<button class="cat-tab" data-slug="' + esc(cat.slug) + '">' + esc(cat.name) + '</button>';
+        }).join('');
 
       tabsEl.querySelectorAll('.cat-tab').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -723,9 +780,7 @@
         });
       });
 
-      if (categories.length > 0) {
-        selectCategory(categories[0].slug);
-      }
+      selectCategory('__orders__');
     }
 
     function selectCategory(slug) {
@@ -733,6 +788,17 @@
       document.querySelectorAll('.cat-tab').forEach(function (t) {
         t.classList.toggle('active', t.dataset.slug === slug);
       });
+
+      if (slug === '__orders__') {
+        document.getElementById('menu-panel').style.display = 'none';
+        document.getElementById('orders-panel').style.display = 'block';
+        loadOrders();
+        return;
+      }
+
+      if (ordersInterval) { clearInterval(ordersInterval); ordersInterval = null; }
+      document.getElementById('orders-panel').style.display = 'none';
+      document.getElementById('menu-panel').style.display = 'block';
       var cat = categories.find(function (c) { return c.slug === slug; });
       document.getElementById('section-title').textContent = cat ? cat.name : 'Items';
       loadItems(slug);
@@ -851,6 +917,97 @@
         toast('Item deleted', 'success');
         currentItems = currentItems.filter(function (i) { return i.id !== id; });
         renderItemsTable(currentItems);
+      }
+    }
+
+    /* ── Orders ─────────────────────────────────────────── */
+    async function loadOrders() {
+      var wrap = document.getElementById('orders-wrap');
+      wrap.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
+
+      var { data, error } = await sb
+        .from('kori_orders')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (error) { toast('Failed to load orders: ' + error.message, 'error'); return; }
+      renderOrdersTable(data || []);
+
+      if (!ordersInterval) {
+        ordersInterval = setInterval(function () {
+          if (currentCatSlug === '__orders__') loadOrders();
+        }, 30000);
+      }
+    }
+
+    function renderOrdersTable(orders) {
+      var wrap = document.getElementById('orders-wrap');
+      if (orders.length === 0) {
+        wrap.innerHTML = '<div class="empty-state">No orders yet. Orders will appear here when customers place them.</div>';
+        return;
+      }
+      wrap.innerHTML = '<table>' +
+        '<thead><tr>' +
+        '<th>Time</th><th>Order #</th><th>Customer</th><th>Phone</th>' +
+        '<th>Items</th><th>Total</th><th>Pickup</th><th>Status</th><th>Actions</th>' +
+        '</tr></thead><tbody>' +
+        orders.map(function (order) {
+          var dt = new Date(order.created_at);
+          var timeStr = dt.toLocaleTimeString('en-ZW', { hour: '2-digit', minute: '2-digit' });
+          var dateStr = dt.toLocaleDateString('en-ZW', { day: 'numeric', month: 'short' });
+          var items = Array.isArray(order.items) ? order.items : [];
+          var summary = items.map(function (i) { return (i.qty || 1) + '× ' + i.name; }).join(', ');
+          var summaryShort = summary.length > 55 ? summary.slice(0, 52) + '…' : summary;
+          var statusBadge = '<span class="status-badge status-' + esc(order.status) + '">' + esc(order.status) + '</span>';
+          var actions = getStatusActions(order.id, order.status);
+          return '<tr data-order-id="' + esc(order.id) + '">' +
+            '<td style="white-space:nowrap;font-size:0.78rem;">' + esc(timeStr) + '<br><span style="font-size:0.68rem;color:rgba(47,61,28,0.45)">' + esc(dateStr) + '</span></td>' +
+            '<td style="font-family:\'Cinzel\',serif;font-size:0.76rem;white-space:nowrap;">' + esc(order.id) + '</td>' +
+            '<td style="font-weight:500;white-space:nowrap;">' + esc(order.customer_name) + '</td>' +
+            '<td style="font-size:0.78rem;white-space:nowrap;">' + esc(order.customer_phone) + '</td>' +
+            '<td class="order-items-cell" title="' + esc(summary) + '">' + esc(summaryShort) + '</td>' +
+            '<td style="font-family:\'Cinzel\',serif;white-space:nowrap;">$' + parseFloat(order.total || 0).toFixed(2) + '</td>' +
+            '<td style="white-space:nowrap;font-size:0.78rem;">' + esc(order.pickup_time || '—') + '</td>' +
+            '<td>' + statusBadge + '</td>' +
+            '<td class="td-actions"><span class="actions-wrap">' + actions + '</span></td>' +
+            '</tr>';
+        }).join('') +
+        '</tbody></table>';
+
+      wrap.querySelectorAll('.status-action-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          updateOrderStatus(btn.dataset.orderId, btn.dataset.newStatus);
+        });
+      });
+    }
+
+    function getStatusActions(orderId, status) {
+      var id = esc(orderId);
+      if (status === 'new') {
+        return '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="preparing">Preparing</button>' +
+               '<button class="status-action-btn status-action-cancel" data-order-id="' + id + '" data-new-status="cancelled">Cancel</button>';
+      }
+      if (status === 'preparing') {
+        return '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="ready">Ready ✓</button>' +
+               '<button class="status-action-btn status-action-cancel" data-order-id="' + id + '" data-new-status="cancelled">Cancel</button>';
+      }
+      if (status === 'ready') {
+        return '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="collected">Collected ✓</button>';
+      }
+      return '';
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+      var { error } = await sb
+        .from('kori_orders')
+        .update({ status: newStatus, updated_at: new Date().toISOString() })
+        .eq('id', orderId);
+      if (error) {
+        toast('Update failed: ' + error.message, 'error');
+      } else {
+        toast('Order ' + orderId + ' → ' + newStatus, 'success');
+        loadOrders();
       }
     }
 
