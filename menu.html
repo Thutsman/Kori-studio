@@ -1144,31 +1144,44 @@
 
   // ── Tab scroll-spy ───────────────────────────────────────────────────────────
   (function () {
-    var sections = document.querySelectorAll('.menu-section');
-    var tabs     = document.querySelectorAll('.tab-link');
+    var sections    = document.querySelectorAll('.menu-section');
+    var tabs        = document.querySelectorAll('.tab-link');
+    var tabScrollEl = document.querySelector('.tab-scroll');
     if (!sections.length || !tabs.length) return;
+
+    // Only scroll the tab bar horizontally — never touches page scroll position
+    function scrollTabIntoView(tab) {
+      if (!tabScrollEl || !tab) return;
+      var left = tab.offsetLeft - (tabScrollEl.clientWidth / 2) + (tab.offsetWidth / 2);
+      tabScrollEl.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+    }
+
+    function setActiveTab(id) {
+      tabs.forEach(function (t) { t.classList.remove('active'); });
+      var active = document.querySelector('.tab-link[href="#' + id + '"]');
+      if (active) { active.classList.add('active'); scrollTabIntoView(active); }
+    }
 
     var obs = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          tabs.forEach(function (t) { t.classList.remove('active'); });
-          var active = document.querySelector('.tab-link[href="#' + entry.target.id + '"]');
-          if (active) {
-            active.classList.add('active');
-            active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-          }
-        }
+        if (entry.isIntersecting) setActiveTab(entry.target.id);
       });
     }, { rootMargin: '-15% 0px -80% 0px', threshold: 0 });
 
     sections.forEach(function (s) { obs.observe(s); });
 
-    // Smooth scroll on tab click (handles the sticky offset)
+    // Tab click: calculate offset from live header/tabbar heights so scroll lands correctly
     tabs.forEach(function (tab) {
       tab.addEventListener('click', function (e) {
         e.preventDefault();
         var target = document.querySelector(tab.getAttribute('href'));
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (!target) return;
+        var header = document.getElementById('site-header');
+        var tabBar = document.querySelector('.tab-bar');
+        var offset = (header ? header.offsetHeight : 65) + (tabBar ? tabBar.offsetHeight : 46) + 8;
+        var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+        setActiveTab(tab.getAttribute('href').slice(1));
       });
     });
   })();
