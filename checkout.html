@@ -225,38 +225,38 @@
     }
 
     // ── Order summary (runs first, independent of slot logic) ─────────────
-    var summaryList     = document.getElementById(‘summary-list’);
-    var summaryEmpty    = document.getElementById(‘summary-empty’);
-    var summaryTotalRow = document.getElementById(‘summary-total-row’);
-    var summaryTotal    = document.getElementById(‘summary-total’);
+    var summaryList     = document.getElementById('summary-list');
+    var summaryEmpty    = document.getElementById('summary-empty');
+    var summaryTotalRow = document.getElementById('summary-total-row');
+    var summaryTotal    = document.getElementById('summary-total');
 
     function renderSummary() {
       if (!summaryList || !summaryEmpty || !summaryTotalRow || !summaryTotal) return;
       var items = getCart();
       if (items.length === 0) {
-        summaryList.innerHTML = ‘’;
-        summaryEmpty.style.display = ‘’;
-        summaryTotalRow.classList.add(‘hidden’);
+        summaryList.innerHTML = '';
+        summaryEmpty.style.display = '';
+        summaryTotalRow.classList.add('hidden');
       } else {
-        summaryEmpty.style.display = ‘none’;
-        summaryTotalRow.classList.remove(‘hidden’);
-        summaryTotal.textContent = ‘$’ + cartTotal(items).toFixed(2);
+        summaryEmpty.style.display = 'none';
+        summaryTotalRow.classList.remove('hidden');
+        summaryTotal.textContent = '$' + cartTotal(items).toFixed(2);
         summaryList.innerHTML = items.map(function (item) {
-          return ‘<li class="flex justify-between items-center text-sm gap-2">’ +
-            ‘<span class="text-cream-light/85 flex-1">’ + item.name +
-              (item.qty > 1 ? ‘ <span class="text-cream-light/40">&times;’ + item.qty + ‘</span>’ : ‘’) +
-            ‘</span>’ +
-            ‘<span class="font-display text-gold flex-shrink-0">$’ + (item.price * item.qty).toFixed(2) + ‘</span>’ +
-          ‘</li>’;
-        }).join(‘’);
+          return '<li class="flex justify-between items-center text-sm gap-2">' +
+            '<span class="text-cream-light/85 flex-1">' + item.name +
+              (item.qty > 1 ? ' <span class="text-cream-light/40">&times;' + item.qty + '</span>' : '') +
+            '</span>' +
+            '<span class="font-display text-gold flex-shrink-0">$' + (item.price * item.qty).toFixed(2) + '</span>' +
+          '</li>';
+        }).join('');
       }
     }
     renderSummary();
 
     // ── Pickup time slots ──────────────────────────────────────────────────
     (function () {
-      var wrap  = document.getElementById(‘time-slots-wrap’);
-      var hidIn = document.getElementById(‘pickup-time’);
+      var wrap  = document.getElementById('time-slots-wrap');
+      var hidIn = document.getElementById('pickup-time');
       if (!wrap) return;
 
       var now = new Date();
@@ -267,31 +267,31 @@
         [0, 30].forEach(function (m) {
           if (h * 60 + m >= nowMin) {
             var hd = h % 12 === 0 ? 12 : h % 12;
-            var sf = h < 12 ? ‘AM’ : ‘PM’;
-            slots.push({ v: h + ‘:’ + (m === 0 ? ‘00’ : ‘30’), l: hd + ‘:’ + (m === 0 ? ‘00’ : ‘30’) + ‘ ’ + sf });
+            var sf = h < 12 ? 'AM' : 'PM';
+            slots.push({ v: h + ':' + (m === 0 ? '00' : '30'), l: hd + ':' + (m === 0 ? '00' : '30') + ' ' + sf });
           }
         });
       }
 
-      var BASE = ‘display:inline-block;padding:8px 16px;border:2px solid #4A5F2A;border-radius:999px;background:#ffffff;color:#2F3D1C;font-size:13px;font-family:Inter,system-ui,sans-serif;font-weight:500;line-height:1;cursor:pointer;white-space:nowrap;margin:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;’;
-      var SEL  = ‘display:inline-block;padding:8px 16px;border:2px solid #4A5F2A;border-radius:999px;background:#4A5F2A;color:#FAF6F0;font-size:13px;font-family:Inter,system-ui,sans-serif;font-weight:500;line-height:1;cursor:pointer;white-space:nowrap;margin:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;’;
+      var BASE = 'display:inline-block;padding:8px 16px;border:2px solid #4A5F2A;border-radius:999px;background:#ffffff;color:#2F3D1C;font-size:13px;font-family:Inter,system-ui,sans-serif;font-weight:500;line-height:1;cursor:pointer;white-space:nowrap;margin:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;';
+      var SEL  = 'display:inline-block;padding:8px 16px;border:2px solid #4A5F2A;border-radius:999px;background:#4A5F2A;color:#FAF6F0;font-size:13px;font-family:Inter,system-ui,sans-serif;font-weight:500;line-height:1;cursor:pointer;white-space:nowrap;margin:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;';
 
       if (slots.length === 0) {
-        wrap.innerHTML = ‘<span style="font-size:13px;color:#4A5F2A;opacity:0.7;">No slots available — we are now closed.</span>’;
+        wrap.innerHTML = '<span style="font-size:13px;color:#4A5F2A;opacity:0.7;">No slots available — we are now closed.</span>';
         return;
       }
 
       slots.forEach(function (s) {
-        var btn = document.createElement(‘button’);
-        btn.type = ‘button’;
-        btn.setAttribute(‘style’, BASE);
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('style', BASE);
         btn.textContent = s.l;
-        btn.addEventListener(‘click’, function () {
-          wrap.querySelectorAll(‘button’).forEach(function (b) { b.setAttribute(‘style’, BASE); });
-          btn.setAttribute(‘style’, SEL);
+        btn.addEventListener('click', function () {
+          wrap.querySelectorAll('button').forEach(function (b) { b.setAttribute('style', BASE); });
+          btn.setAttribute('style', SEL);
           if (hidIn) hidIn.value = s.v;
-          var te = document.getElementById(‘time-error’);
-          if (te) te.style.display = ‘none’;
+          var te = document.getElementById('time-error');
+          if (te) te.style.display = 'none';
         });
         wrap.appendChild(btn);
       });
