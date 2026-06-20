@@ -205,7 +205,14 @@
     var KORI_WA      = '263775090455';
     var SUPABASE_URL = 'https://xourjibposchcfnsttuv.supabase.co';
     var SUPABASE_KEY = 'sb_publishable_NppKXz3OXq5fsowbnQ4fTA_HrqS4HA1';
-    var sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+    // Isolated so any Supabase SDK error cannot crash the cart summary or time slots
+    var sb = null;
+    try {
+      if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    } catch (e) {
+      console.warn('Supabase init failed — orders will not be saved to DB:', e);
+    }
 
     function getCart() {
       try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch (e) { return []; }
@@ -221,6 +228,7 @@
     var summaryTotal    = document.getElementById(‘summary-total’);
 
     function renderSummary() {
+      if (!summaryList || !summaryEmpty || !summaryTotalRow || !summaryTotal) return;
       var items = getCart();
       if (items.length === 0) {
         summaryList.innerHTML = ‘’;
