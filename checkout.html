@@ -204,7 +204,7 @@
   <script>
   (function () {
     var CART_KEY     = 'kori-cart';
-    var KORI_WA      = '263779035404';
+    var KORI_WA      = '263775090455';
     var SUPABASE_URL = 'https://xourjibposchcfnsttuv.supabase.co';
     var SUPABASE_KEY = 'sb_publishable_NppKXz3OXq5fsowbnQ4fTA_HrqS4HA1';
     var sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
@@ -234,13 +234,9 @@
       });
     }
     if (slots.length === 0) {
-      var opt = document.createElement('option');
-      opt.value = 'ASAP'; opt.textContent = 'As soon as possible';
+      var opt = document.createElement(‘option’);
+      opt.value = ‘’; opt.textContent = ‘No slots available — we are now closed.’;
       pickupSelect.appendChild(opt);
-      var noteOpt = document.createElement('option');
-      noteOpt.disabled = true;
-      noteOpt.textContent = '(We’re near or past closing — we’ll confirm your order)';
-      pickupSelect.appendChild(noteOpt);
     } else {
       slots.forEach(function (s) {
         var opt = document.createElement('option');
@@ -335,16 +331,11 @@
       localStorage.removeItem(CART_KEY);
 
       // Format pickup time for WhatsApp message
-      var pickupLabel;
-      if (time.includes(':')) {
-        var tp = time.split(':');
-        var th = parseInt(tp[0]), tm = tp[1] || '00';
-        var tSuffix = th < 12 ? 'AM' : 'PM';
-        var th12 = th % 12 === 0 ? 12 : th % 12;
-        pickupLabel = th12 + ':' + tm + ' ' + tSuffix;
-      } else {
-        pickupLabel = time;
-      }
+      var tp = time.split(':');
+      var th = parseInt(tp[0]), tm = tp[1] || '00';
+      var tSuffix = th < 12 ? 'AM' : 'PM';
+      var th12 = th % 12 === 0 ? 12 : th % 12;
+      var pickupLabel = th12 + ':' + tm + ' ' + tSuffix;
 
       // Build WhatsApp message for kitchen
       var itemLines = items.map(function (i) {
