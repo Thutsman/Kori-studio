@@ -676,6 +676,14 @@
     .order-card-total { font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 500; }
     .order-card-actions { display: flex; gap: 0.3rem; flex-wrap: wrap; }
 
+    /* ── Menu items table: mobile column hiding ────────────── */
+    #items-wrap { overflow-x: auto; }
+    @media (max-width: 699px) {
+      .col-mobile-hide { display: none; }
+      #items-wrap td.td-desc,
+      #items-wrap td.td-price { display: none; }
+    }
+
     /* ── Photo upload ───────────────────────────────────────── */
     .item-thumb { width:36px; height:36px; object-fit:cover; border-radius:3px; margin-right:0.45rem; vertical-align:middle; display:inline-block; flex-shrink:0; }
     .photo-upload-zone {
@@ -1019,8 +1027,8 @@
       wrap.innerHTML = '<table>' +
         '<thead><tr>' +
         '<th>Name</th>' +
-        '<th>Description</th>' +
-        '<th>Price</th>' +
+        '<th class="col-mobile-hide">Description</th>' +
+        '<th class="col-mobile-hide">Price</th>' +
         '<th>Available</th>' +
         '<th>Actions</th>' +
         '</tr></thead>' +
