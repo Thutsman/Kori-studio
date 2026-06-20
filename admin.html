@@ -1528,17 +1528,16 @@
       };
 
       var id = fId.value.trim();
-      var error;
+      var dbRes;
       if (id) {
-        var res = await sb.from('kori_menu_items').update(payload).eq('id', id);
-        error = res.error;
+        dbRes = await sb.from('kori_menu_items').update(payload).eq('id', id);
       } else {
-        var res = await sb.from('kori_menu_items').insert(payload);
-        error = res.error;
+        dbRes = await sb.from('kori_menu_items').insert(payload);
       }
 
-      if (error) {
-        toast('Save failed: ' + error.message, 'error');
+      if (dbRes.error) {
+        toast('Save failed: ' + dbRes.error.message, 'error');
+        console.error('DB error:', dbRes.error);
         saveBtn.disabled = false;
         saveBtn.textContent = 'Save Item';
       } else {
