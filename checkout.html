@@ -55,6 +55,26 @@
       border-color: #4A5F2A !important;
       box-shadow: 0 0 0 3px rgba(74, 95, 42, 0.12);
     }
+    .time-pill {
+      padding: 0.45rem 0.9rem;
+      border: 1.5px solid rgba(74, 95, 42, 0.25);
+      border-radius: 999px;
+      background: rgba(250, 246, 240, 0.6);
+      color: #2F3D1C;
+      font-size: 0.8rem;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .time-pill:hover { border-color: #4A5F2A; background: rgba(74, 95, 42, 0.06); }
+    .time-pill.selected { background: #4A5F2A; border-color: #4A5F2A; color: #FAF6F0; }
+    .time-pill:active { transform: scale(0.95); }
     .btn-primary {
       position: relative; overflow: hidden; transition: all 0.3s ease;
     }
@@ -133,11 +153,9 @@
             <h2 class="font-display text-lg tracking-wide text-[#2F3D1C] mb-1">Pickup Details</h2>
 
             <div>
-              <label for="pickup-time" class="block text-xs tracking-[0.15em] uppercase font-semibold text-[#4A5F2A] mb-2">Preferred Pickup Time</label>
-              <select id="pickup-time" name="pickup_time" required
-                class="w-full px-4 py-3 rounded-sm border border-olive-deep/20 bg-cream-light/50 text-[#2F3D1C] text-sm transition-all duration-200 appearance-none cursor-pointer">
-                <option value="">— Select a time —</option>
-              </select>
+              <label class="block text-xs tracking-[0.15em] uppercase font-semibold text-[#4A5F2A] mb-2">Preferred Pickup Time</label>
+              <div id="time-slots-wrap" class="flex flex-wrap gap-2 py-1"></div>
+              <input type="hidden" id="pickup-time" name="pickup_time" value="" />
               <p id="time-error" class="hidden text-xs text-terracotta mt-1.5">Please select a pickup time.</p>
               <p class="text-xs text-[#4A5F2A]/70 mt-1.5">Collection from Kori Studio, 16 Francis Warren, Ilanda, Bulawayo.</p>
             </div>
@@ -217,7 +235,8 @@
     }
 
     // ── Pickup time slots ──────────────────────────────────────────────────
-    var pickupSelect = document.getElementById('pickup-time');
+    var slotsWrap       = document.getElementById(‘time-slots-wrap’);
+    var pickupHiddenIn  = document.getElementById(‘pickup-time’);
     var now = new Date();
     var currentHour = now.getHours(), currentMin = now.getMinutes();
     var openHour = 8, closeHour = 19;
@@ -228,20 +247,26 @@
         var nowMinutes  = currentHour * 60 + currentMin + 25;
         if (slotMinutes >= nowMinutes) {
           var hDisp = h % 12 === 0 ? 12 : h % 12;
-          var suffix = h < 12 ? 'AM' : 'PM';
-          slots.push({ value: h + ':' + (m === 0 ? '00' : '30'), label: hDisp + ':' + (m === 0 ? '00' : '30') + ' ' + suffix });
+          var suffix = h < 12 ? ‘AM’ : ‘PM’;
+          slots.push({ value: h + ‘:’ + (m === 0 ? ‘00’ : ‘30’), label: hDisp + ‘:’ + (m === 0 ? ‘00’ : ‘30’) + ‘ ‘ + suffix });
         }
       });
     }
     if (slots.length === 0) {
-      var opt = document.createElement(‘option’);
-      opt.value = ‘’; opt.textContent = ‘No slots available — we are now closed.’;
-      pickupSelect.appendChild(opt);
+      slotsWrap.innerHTML = ‘<p class="text-sm text-[#4A5F2A]/55 py-1">No pickup slots available — we are now closed.</p>’;
     } else {
       slots.forEach(function (s) {
-        var opt = document.createElement('option');
-        opt.value = s.value; opt.textContent = s.label;
-        pickupSelect.appendChild(opt);
+        var btn = document.createElement(‘button’);
+        btn.type = ‘button’;
+        btn.className = ‘time-pill’;
+        btn.textContent = s.label;
+        btn.addEventListener(‘click’, function () {
+          document.querySelectorAll(‘.time-pill’).forEach(function (p) { p.classList.remove(‘selected’); });
+          btn.classList.add(‘selected’);
+          pickupHiddenIn.value = s.value;
+          document.getElementById(‘time-error’).classList.add(‘hidden’);
+        });
+        slotsWrap.appendChild(btn);
       });
     }
 
