@@ -56,25 +56,27 @@
       box-shadow: 0 0 0 3px rgba(74, 95, 42, 0.12);
     }
     .time-pill {
-      padding: 0.45rem 0.9rem;
-      border: 1.5px solid rgba(74, 95, 42, 0.25);
+      display: inline-block;
+      padding: 0.45rem 1rem;
+      border: 1.5px solid #4A5F2A;
       border-radius: 999px;
-      background: rgba(250, 246, 240, 0.6);
+      background: #fff;
       color: #2F3D1C;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-family: 'Inter', system-ui, sans-serif;
       font-weight: 500;
+      line-height: 1.4;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: background 0.12s ease, color 0.12s ease;
       white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
       user-select: none;
       -webkit-user-select: none;
     }
-    .time-pill:hover { border-color: #4A5F2A; background: rgba(74, 95, 42, 0.06); }
-    .time-pill.selected { background: #4A5F2A; border-color: #4A5F2A; color: #FAF6F0; }
-    .time-pill:active { transform: scale(0.95); }
+    .time-pill:hover { background: rgba(74, 95, 42, 0.08); }
+    .time-pill.selected { background: #4A5F2A; color: #FAF6F0; }
+    .time-pill:active { opacity: 0.75; }
     .btn-primary {
       position: relative; overflow: hidden; transition: all 0.3s ease;
     }
@@ -154,7 +156,7 @@
 
             <div>
               <label class="block text-xs tracking-[0.15em] uppercase font-semibold text-[#4A5F2A] mb-2">Preferred Pickup Time</label>
-              <div id="time-slots-wrap" class="flex flex-wrap gap-2 py-1"></div>
+              <div id="time-slots-wrap" style="display:flex;flex-wrap:wrap;gap:8px;padding:4px 0 2px;"></div>
               <input type="hidden" id="pickup-time" name="pickup_time" value="" />
               <p id="time-error" class="hidden text-xs text-terracotta mt-1.5">Please select a pickup time.</p>
               <p class="text-xs text-[#4A5F2A]/70 mt-1.5">Collection from Kori Studio, 16 Francis Warren, Ilanda, Bulawayo.</p>
