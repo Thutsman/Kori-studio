@@ -521,6 +521,7 @@
       white-space: nowrap;
     }
     .status-new       { background: rgba(217,119,6,0.12);   color: #B45309; }
+    .status-confirmed { background: rgba(139,92,246,0.12);  color: #7C3AED; }
     .status-preparing { background: rgba(37,99,235,0.1);    color: #1D4ED8; }
     .status-ready     { background: rgba(22,163,74,0.12);   color: #15803D; }
     .status-collected { background: rgba(107,114,128,0.12); color: #4B5563; }
@@ -550,6 +551,99 @@
 
     .order-items-cell { font-size: 0.75rem; color: rgba(47,61,28,0.6); max-width: 200px; }
     .orders-refresh-note { font-size: 0.72rem; color: rgba(47,61,28,0.4); }
+
+    /* ── Analytics bar ──────────────────────────────────────── */
+    .analytics-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    @media (max-width: 640px) { .analytics-bar { grid-template-columns: repeat(2, 1fr); } }
+    .analytics-card {
+      background: #fff;
+      border: 1px solid rgba(74,95,42,0.12);
+      border-radius: 4px;
+      padding: 0.85rem 1rem;
+    }
+    .analytics-label {
+      font-size: 0.61rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(47,61,28,0.45);
+      margin-bottom: 0.3rem;
+    }
+    .analytics-value {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 1.45rem;
+      color: #2F3D1C;
+      font-weight: 500;
+    }
+    .analytics-value.green { color: #15803D; }
+
+    /* ── Orders toolbar ─────────────────────────────────────── */
+    .orders-toolbar { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.1rem; }
+    .order-search-input {
+      width: 100%;
+      padding: 0.58rem 1rem;
+      border: 1px solid rgba(74,95,42,0.22);
+      border-radius: 3px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.85rem;
+      color: #2F3D1C;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .order-search-input:focus { border-color: #4A5F2A; }
+    .status-filter-tabs { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+    .status-filter-tab {
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.64rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1px solid rgba(74,95,42,0.2);
+      background: none;
+      color: rgba(47,61,28,0.5);
+      cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .status-filter-tab:hover { color: #4A5F2A; border-color: rgba(74,95,42,0.45); }
+    .status-filter-tab.active { background: #4A5F2A; color: #FAF6F0; border-color: #4A5F2A; }
+
+    /* ── Realtime indicator ─────────────────────────────────── */
+    .live-dot {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      margin-right: 0.35rem;
+      vertical-align: middle;
+      animation: livepulse 2s infinite;
+    }
+    @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+    .live-label { font-size: 0.72rem; color: #22c55e; font-weight: 600; vertical-align: middle; }
+    .wa-notify-btn {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.26rem 0.6rem;
+      border-radius: 3px;
+      font-size: 0.67rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Inter', system-ui, sans-serif;
+      border: 1px solid rgba(37,211,102,0.35);
+      background: rgba(37,211,102,0.08);
+      color: #128C7E;
+      transition: all 0.15s;
+      white-space: nowrap;
+      margin-right: 0.3rem;
+    }
+    .wa-notify-btn:hover { background: #25D366; color: #fff; border-color: #25D366; }
   </style>
 </head>
 <body>
@@ -592,9 +686,41 @@
       </div>
       <!-- Orders panel -->
       <div id="orders-panel" style="display:none;">
-        <div class="content-header">
+        <!-- Analytics bar -->
+        <div class="analytics-bar">
+          <div class="analytics-card">
+            <div class="analytics-label">Today's Orders</div>
+            <div class="analytics-value" id="stat-today">—</div>
+          </div>
+          <div class="analytics-card">
+            <div class="analytics-label">Today's Revenue</div>
+            <div class="analytics-value green" id="stat-revenue">—</div>
+          </div>
+          <div class="analytics-card">
+            <div class="analytics-label">Active Now</div>
+            <div class="analytics-value" id="stat-active">—</div>
+          </div>
+          <div class="analytics-card">
+            <div class="analytics-label">Ready to Collect</div>
+            <div class="analytics-value green" id="stat-ready">—</div>
+          </div>
+        </div>
+        <!-- Search & status filter -->
+        <div class="orders-toolbar">
+          <input type="text" id="order-search" class="order-search-input" placeholder="Search by name or order #…" />
+          <div class="status-filter-tabs" id="status-filter-tabs">
+            <button class="status-filter-tab active" data-filter="">All</button>
+            <button class="status-filter-tab" data-filter="new">New</button>
+            <button class="status-filter-tab" data-filter="confirmed">Confirmed</button>
+            <button class="status-filter-tab" data-filter="preparing">Preparing</button>
+            <button class="status-filter-tab" data-filter="ready">Ready</button>
+            <button class="status-filter-tab" data-filter="collected">Collected</button>
+            <button class="status-filter-tab" data-filter="cancelled">Cancelled</button>
+          </div>
+        </div>
+        <div class="content-header" style="margin-top:0;">
           <h2>Live Orders</h2>
-          <span class="orders-refresh-note">Auto-refreshes every 30 s</span>
+          <span><span class="live-dot"></span><span class="live-label">Live</span></span>
         </div>
         <div class="table-wrap" id="orders-wrap">
           <div class="spinner-wrap"><div class="spinner"></div></div>
@@ -750,6 +876,10 @@
     var currentCatSlug = null;
     var currentItems = [];
     var ordersInterval = null;
+    var ordersChannel = null;
+    var allOrders = [];
+    var orderStatusFilter = '';
+    var orderSearch = '';
 
     /* ── Init ──────────────────────────────────────────── */
     function init() {
@@ -793,9 +923,11 @@
         document.getElementById('menu-panel').style.display = 'none';
         document.getElementById('orders-panel').style.display = 'block';
         loadOrders();
+        subscribeToOrders();
         return;
       }
 
+      unsubscribeFromOrders();
       if (ordersInterval) { clearInterval(ordersInterval); ordersInterval = null; }
       document.getElementById('orders-panel').style.display = 'none';
       document.getElementById('menu-panel').style.display = 'block';
@@ -929,22 +1061,92 @@
         .from('kori_orders')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(100);
+        .limit(200);
 
       if (error) { toast('Failed to load orders: ' + error.message, 'error'); return; }
-      renderOrdersTable(data || []);
+      allOrders = data || [];
+      renderAnalytics(allOrders);
+      renderFilteredOrders();
+      wireOrdersToolbar();
+    }
 
-      if (!ordersInterval) {
-        ordersInterval = setInterval(function () {
-          if (currentCatSlug === '__orders__') loadOrders();
-        }, 30000);
+    async function refreshOrdersQuietly() {
+      var { data, error } = await sb
+        .from('kori_orders')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(200);
+      if (error) return;
+      allOrders = data || [];
+      renderAnalytics(allOrders);
+      renderFilteredOrders();
+    }
+
+    function subscribeToOrders() {
+      if (ordersChannel) return;
+      ordersChannel = sb.channel('kori-orders-rt')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'kori_orders' }, function () {
+          refreshOrdersQuietly();
+        })
+        .subscribe();
+    }
+
+    function unsubscribeFromOrders() {
+      if (ordersChannel) { sb.removeChannel(ordersChannel); ordersChannel = null; }
+    }
+
+    function wireOrdersToolbar() {
+      var searchInput = document.getElementById('order-search');
+      if (searchInput && !searchInput.dataset.wired) {
+        searchInput.dataset.wired = '1';
+        searchInput.addEventListener('input', function () {
+          orderSearch = searchInput.value.trim().toLowerCase();
+          renderFilteredOrders();
+        });
       }
+      var filterTabs = document.querySelectorAll('.status-filter-tab');
+      filterTabs.forEach(function (tab) {
+        if (tab.dataset.wired) return;
+        tab.dataset.wired = '1';
+        tab.addEventListener('click', function () {
+          orderStatusFilter = tab.dataset.filter;
+          filterTabs.forEach(function (t) { t.classList.toggle('active', t.dataset.filter === orderStatusFilter); });
+          renderFilteredOrders();
+        });
+      });
+    }
+
+    function renderAnalytics(orders) {
+      var todayStr = new Date().toDateString();
+      var todayOrders = orders.filter(function (o) { return new Date(o.created_at).toDateString() === todayStr; });
+      var revenue = todayOrders
+        .filter(function (o) { return o.status !== 'cancelled'; })
+        .reduce(function (s, o) { return s + parseFloat(o.total || 0); }, 0);
+      var active = orders.filter(function (o) { return ['new','confirmed','preparing'].indexOf(o.status) !== -1; }).length;
+      var ready  = orders.filter(function (o) { return o.status === 'ready'; }).length;
+      var el = function (id) { return document.getElementById(id); };
+      if (el('stat-today'))   el('stat-today').textContent   = todayOrders.length;
+      if (el('stat-revenue')) el('stat-revenue').textContent = '$' + revenue.toFixed(2);
+      if (el('stat-active'))  el('stat-active').textContent  = active;
+      if (el('stat-ready'))   el('stat-ready').textContent   = ready;
+    }
+
+    function renderFilteredOrders() {
+      var filtered = allOrders.filter(function (o) {
+        var matchStatus = !orderStatusFilter || o.status === orderStatusFilter;
+        var matchSearch = !orderSearch ||
+          o.id.toLowerCase().includes(orderSearch) ||
+          (o.customer_name || '').toLowerCase().includes(orderSearch) ||
+          (o.customer_phone || '').toLowerCase().includes(orderSearch);
+        return matchStatus && matchSearch;
+      });
+      renderOrdersTable(filtered);
     }
 
     function renderOrdersTable(orders) {
       var wrap = document.getElementById('orders-wrap');
       if (orders.length === 0) {
-        wrap.innerHTML = '<div class="empty-state">No orders yet. Orders will appear here when customers place them.</div>';
+        wrap.innerHTML = '<div class="empty-state">No orders match this filter.</div>';
         return;
       }
       wrap.innerHTML = '<table>' +
@@ -958,12 +1160,12 @@
           var dateStr = dt.toLocaleDateString('en-ZW', { day: 'numeric', month: 'short' });
           var items = Array.isArray(order.items) ? order.items : [];
           var summary = items.map(function (i) { return (i.qty || 1) + '× ' + i.name; }).join(', ');
-          var summaryShort = summary.length > 55 ? summary.slice(0, 52) + '…' : summary;
+          var summaryShort = summary.length > 50 ? summary.slice(0, 47) + '…' : summary;
           var statusBadge = '<span class="status-badge status-' + esc(order.status) + '">' + esc(order.status) + '</span>';
-          var actions = getStatusActions(order.id, order.status);
+          var actions = getStatusActions(order);
           return '<tr data-order-id="' + esc(order.id) + '">' +
-            '<td style="white-space:nowrap;font-size:0.78rem;">' + esc(timeStr) + '<br><span style="font-size:0.68rem;color:rgba(47,61,28,0.45)">' + esc(dateStr) + '</span></td>' +
-            '<td style="font-family:\'Cinzel\',serif;font-size:0.76rem;white-space:nowrap;">' + esc(order.id) + '</td>' +
+            '<td style="white-space:nowrap;font-size:0.78rem;">' + esc(timeStr) + '<br><span style="font-size:0.67rem;color:rgba(47,61,28,0.4)">' + esc(dateStr) + '</span></td>' +
+            '<td style="font-family:\'Cinzel\',serif;font-size:0.75rem;white-space:nowrap;">' + esc(order.id) + '</td>' +
             '<td style="font-weight:500;white-space:nowrap;">' + esc(order.customer_name) + '</td>' +
             '<td style="font-size:0.78rem;white-space:nowrap;">' + esc(order.customer_phone) + '</td>' +
             '<td class="order-items-cell" title="' + esc(summary) + '">' + esc(summaryShort) + '</td>' +
@@ -977,38 +1179,85 @@
 
       wrap.querySelectorAll('.status-action-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
-          updateOrderStatus(btn.dataset.orderId, btn.dataset.newStatus);
+          var order = allOrders.find(function (o) { return o.id === btn.dataset.orderId; });
+          updateOrderStatus(order, btn.dataset.newStatus);
+        });
+      });
+      wrap.querySelectorAll('.wa-notify-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var order = allOrders.find(function (o) { return o.id === btn.dataset.orderId; });
+          if (order) sendCustomerWA(order, btn.dataset.waStatus);
         });
       });
     }
 
-    function getStatusActions(orderId, status) {
-      var id = esc(orderId);
-      if (status === 'new') {
-        return '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="preparing">Preparing</button>' +
+    function getStatusActions(order) {
+      var id = esc(order.id);
+      var wa = function (status, label) {
+        return '<button class="wa-notify-btn" data-order-id="' + id + '" data-wa-status="' + status + '">' +
+          '<svg width="11" height="11" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>' +
+          label + '</button>';
+      };
+      if (order.status === 'new') {
+        return '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="confirmed">Confirm</button>' +
                '<button class="status-action-btn status-action-cancel" data-order-id="' + id + '" data-new-status="cancelled">Cancel</button>';
       }
-      if (status === 'preparing') {
-        return '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="ready">Ready ✓</button>' +
+      if (order.status === 'confirmed') {
+        return wa('confirmed', 'Notify') +
+               '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="preparing">Preparing</button>' +
                '<button class="status-action-btn status-action-cancel" data-order-id="' + id + '" data-new-status="cancelled">Cancel</button>';
       }
-      if (status === 'ready') {
-        return '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="collected">Collected ✓</button>';
+      if (order.status === 'preparing') {
+        return '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="ready">Mark Ready</button>' +
+               '<button class="status-action-btn status-action-cancel" data-order-id="' + id + '" data-new-status="cancelled">Cancel</button>';
+      }
+      if (order.status === 'ready') {
+        return wa('ready', 'Notify Ready') +
+               '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="collected">Collected ✓</button>';
       }
       return '';
     }
 
-    async function updateOrderStatus(orderId, newStatus) {
+    function customerWAMessage(order, status) {
+      var name = order.customer_name;
+      var id   = order.id;
+      var pickup = order.pickup_time || '';
+      if (status === 'confirmed') {
+        return 'Hi ' + name + '! 🌿 Your Köri Studio order *' + id + '* has been confirmed.\n' +
+               'Estimated pickup: *' + pickup + '*\nWe\'ll message you when it\'s ready!';
+      }
+      if (status === 'ready') {
+        return 'Hi ' + name + '! ✅ Your order *' + id + '* is *ready for collection!*\n' +
+               'Come pick it up at Köri Studio 📍 16 Francis Warren, Ilanda, Bulawayo.';
+      }
+      if (status === 'cancelled') {
+        return 'Hi ' + name + ', we\'re sorry — your Köri Studio order *' + id + '* had to be cancelled. Please contact us at +263 775 090 455.';
+      }
+      return null;
+    }
+
+    function sendCustomerWA(order, status) {
+      var msg = customerWAMessage(order, status);
+      if (!msg) return;
+      var phone = (order.customer_phone || '').replace(/\D/g, '');
+      window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(msg), '_blank');
+    }
+
+    async function updateOrderStatus(order, newStatus) {
       var { error } = await sb
         .from('kori_orders')
         .update({ status: newStatus, updated_at: new Date().toISOString() })
-        .eq('id', orderId);
+        .eq('id', order.id);
       if (error) {
         toast('Update failed: ' + error.message, 'error');
-      } else {
-        toast('Order ' + orderId + ' → ' + newStatus, 'success');
-        loadOrders();
+        return;
       }
+      toast('Order ' + order.id + ' → ' + newStatus, 'success');
+      // Auto-send WhatsApp to customer on confirm, ready, or cancel
+      if (['confirmed', 'ready', 'cancelled'].indexOf(newStatus) !== -1) {
+        sendCustomerWA(order, newStatus);
+      }
+      refreshOrdersQuietly();
     }
 
     /* ── Modal ─────────────────────────────────────────── */
