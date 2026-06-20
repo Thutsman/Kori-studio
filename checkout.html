@@ -117,11 +117,11 @@
 
             <div>
               <label for="cust-phone" class="block text-xs tracking-[0.15em] uppercase font-semibold text-[#4A5F2A] mb-2">WhatsApp Number</label>
-              <div class="flex">
+              <div class="flex rounded-sm border border-olive-deep/20 bg-cream-light/50 focus-within:border-[#4A5F2A] transition-colors overflow-hidden">
                 <input type="tel" id="cust-dial" name="dial_code" value="+263" autocomplete="tel-country-code"
-                  class="w-20 px-2 py-3 rounded-l-sm border border-r-0 border-olive-deep/20 bg-cream-warm text-[#2F3D1C]/80 text-sm text-center focus:outline-none focus:border-[#4A5F2A] transition-colors" />
+                  class="w-20 px-2 py-3 border-r border-olive-deep/20 bg-transparent text-[#2F3D1C] text-sm text-center focus:outline-none" />
                 <input type="tel" id="cust-phone" name="phone" autocomplete="tel-national" required
-                  class="flex-1 px-4 py-3 rounded-r-sm border border-olive-deep/20 bg-cream-light/50 text-[#2F3D1C] text-sm placeholder:text-[#2F3D1C]/35 transition-all duration-200"
+                  class="flex-1 px-4 py-3 bg-transparent text-[#2F3D1C] text-sm placeholder:text-[#2F3D1C]/35 focus:outline-none"
                   placeholder="77 123 4567" maxlength="15" />
               </div>
               <p id="phone-error" class="hidden text-xs text-terracotta mt-1.5">Please enter a valid phone number.</p>
