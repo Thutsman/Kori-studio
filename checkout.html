@@ -313,7 +313,7 @@
       hideError(nameErr); hideError(phoneErr); hideError(timeErr); hideError(formErr);
 
       var name  = nameInput.value.trim();
-      var phone = phoneInput.value.trim().replace(/\s/g, '');
+      var phone = phoneInput.value.trim().replace(/\s/g, '').replace(/^0+/, '');
       var time  = timeSelect.value;
       var items = getCart();
 
