@@ -737,11 +737,11 @@
         var results = await Promise.all([
           sb.from('kori_menu_categories')
             .select('*')
-            .eq('is_active', true)
+            .neq('is_active', false)
             .order('sort_order', { ascending: true }),
           sb.from('kori_menu_items')
             .select('*')
-            .eq('available', true)
+            .neq('available', false)
             .order('sort_order', { ascending: true })
         ]);
 
@@ -753,6 +753,15 @@
 
         var categories = catRes.data || [];
         var allItems   = itemRes.data || [];
+
+        if (categories.length === 0) {
+          menuContent.innerHTML = '<div class="py-20 text-center">' +
+            '<p class="font-display text-xl text-[#2F3D1C]/40 dark:text-[#F5F0E6]/30 mb-3">Menu coming soon</p>' +
+            '<p class="text-sm text-[#4A5F2A]/50 dark:text-[#F5F0E6]/40">Check back shortly or ask a team member.</p>' +
+            '<button onclick="location.reload()" class="mt-6 px-5 py-2 text-xs tracking-[0.15em] uppercase font-semibold border border-olive-deep/30 text-[#4A5F2A] rounded-sm hover:bg-olive-deep hover:text-white transition-colors">Refresh</button>' +
+            '</div>';
+          return;
+        }
 
         tabScroll.innerHTML = categories.map(function (cat) {
           return '<a href="#' + esc(cat.slug) + '" class="tab-link">' + esc(cat.name) + '</a>';
