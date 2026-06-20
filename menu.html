@@ -737,11 +737,9 @@
         var results = await Promise.all([
           sb.from('kori_menu_categories')
             .select('*')
-            .or('is_active.is.null,is_active.eq.true')
             .order('sort_order', { ascending: true }),
           sb.from('kori_menu_items')
             .select('*')
-            .or('available.is.null,available.eq.true')
             .order('sort_order', { ascending: true })
         ]);
 
