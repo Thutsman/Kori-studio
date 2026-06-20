@@ -118,12 +118,13 @@
             <div>
               <label for="cust-phone" class="block text-xs tracking-[0.15em] uppercase font-semibold text-[#4A5F2A] mb-2">WhatsApp Number</label>
               <div class="flex">
-                <span class="inline-flex items-center px-3.5 rounded-l-sm border border-r-0 border-olive-deep/20 bg-cream-warm text-[#2F3D1C]/60 text-sm select-none">+263</span>
+                <input type="tel" id="cust-dial" name="dial_code" value="+263" autocomplete="tel-country-code"
+                  class="w-20 px-2 py-3 rounded-l-sm border border-r-0 border-olive-deep/20 bg-cream-warm text-[#2F3D1C]/80 text-sm text-center focus:outline-none focus:border-[#4A5F2A] transition-colors" />
                 <input type="tel" id="cust-phone" name="phone" autocomplete="tel-national" required
                   class="flex-1 px-4 py-3 rounded-r-sm border border-olive-deep/20 bg-cream-light/50 text-[#2F3D1C] text-sm placeholder:text-[#2F3D1C]/35 transition-all duration-200"
-                  placeholder="77 123 4567" maxlength="12" />
+                  placeholder="77 123 4567" maxlength="15" />
               </div>
-              <p id="phone-error" class="hidden text-xs text-terracotta mt-1.5">Please enter a valid Zimbabwe mobile number.</p>
+              <p id="phone-error" class="hidden text-xs text-terracotta mt-1.5">Please enter a valid phone number.</p>
               <p class="text-xs text-[#4A5F2A]/70 mt-1.5">We'll send your order confirmation and ready notification here.</p>
             </div>
           </section>
@@ -296,6 +297,7 @@
     // ── Form submit ────────────────────────────────────────────────────────
     var form       = document.getElementById('checkout-form');
     var nameInput  = document.getElementById('cust-name');
+    var dialInput  = document.getElementById('cust-dial');
     var phoneInput = document.getElementById('cust-phone');
     var timeSelect = document.getElementById('pickup-time');
     var nameErr    = document.getElementById('name-error');
@@ -313,12 +315,13 @@
       hideError(nameErr); hideError(phoneErr); hideError(timeErr); hideError(formErr);
 
       var name  = nameInput.value.trim();
-      var phone = phoneInput.value.trim().replace(/\s/g, '').replace(/^0+/, '');
+      var dial  = (dialInput.value.trim() || '+263').replace(/\s/g, '');
+      var phone = phoneInput.value.trim().replace(/\s/g, '').replace(/^0/, '');
       var time  = timeSelect.value;
       var items = getCart();
 
       if (!name)                               { showError(nameErr);  valid = false; }
-      if (!phone || !/^\d{9,10}$/.test(phone)) { showError(phoneErr); valid = false; }
+      if (!phone || !/^\d{5,14}$/.test(phone) || !/^\+\d{1,4}$/.test(dial)) { showError(phoneErr); valid = false; }
       if (!time)                               { showError(timeErr);  valid = false; }
       if (items.length === 0) {
         formErr.textContent = 'Your order is empty. Add items from the menu first.';
@@ -333,7 +336,7 @@
       submitBtn.disabled = true;
 
       var orderNumber = 'KS-' + Date.now().toString(36).toUpperCase().slice(-6);
-      var fullPhone   = '+263' + phone;
+      var fullPhone   = dial + phone;
       var notes       = document.getElementById('order-notes').value.trim();
       var total       = cartTotal(items);
 

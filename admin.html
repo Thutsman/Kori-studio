@@ -870,6 +870,13 @@
     var SUPABASE_KEY = 'sb_publishable_NppKXz3OXq5fsowbnQ4fTA_HrqS4HA1';
 
     var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // Public client — always uses anon key, never sends an auth JWT.
+    // kori_menu_categories and kori_menu_items have anon SELECT policies (for the public menu).
+    // After signing in, sb sends an authenticated JWT; rows from anon-only policies are
+    // invisible to authenticated users. sbPublic bypasses that for safe public reads.
+    var sbPublic = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+    });
 
     /* ── Utilities ─────────────────────────────────────── */
     function esc(str) {
@@ -979,7 +986,7 @@
       var tabsEl = document.getElementById('cat-tabs');
       tabsEl.innerHTML = '<div class="spinner-wrap" style="padding:0.7rem 1.5rem;"><div class="spinner" style="width:18px;height:18px;border-width:2px;border-color:rgba(74,95,42,0.15);border-top-color:#4A5F2A;"></div></div>';
 
-      var { data, error } = await sb
+      var { data, error } = await sbPublic
         .from('kori_menu_categories')
         .select('*')
         .order('sort_order', { ascending: true });
@@ -1029,7 +1036,7 @@
       var wrap = document.getElementById('items-wrap');
       wrap.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
 
-      var { data, error } = await sb
+      var { data, error } = await sbPublic
         .from('kori_menu_items')
         .select('*')
         .eq('category_slug', slug)
