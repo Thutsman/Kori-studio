@@ -236,69 +236,75 @@
       return items.reduce(function (s, i) { return s + i.price * i.qty; }, 0);
     }
 
-    // ── Pickup time slots ──────────────────────────────────────────────────
-    var slotsWrap       = document.getElementById(‘time-slots-wrap’);
-    var pickupHiddenIn  = document.getElementById(‘pickup-time’);
-    var now = new Date();
-    var currentHour = now.getHours(), currentMin = now.getMinutes();
-    var openHour = 8, closeHour = 19;
-    var slots = [];
-    for (var h = openHour; h < closeHour; h++) {
-      [0, 30].forEach(function (m) {
-        var slotMinutes = h * 60 + m;
-        var nowMinutes  = currentHour * 60 + currentMin + 25;
-        if (slotMinutes >= nowMinutes) {
-          var hDisp = h % 12 === 0 ? 12 : h % 12;
-          var suffix = h < 12 ? ‘AM’ : ‘PM’;
-          slots.push({ value: h + ‘:’ + (m === 0 ? ‘00’ : ‘30’), label: hDisp + ‘:’ + (m === 0 ? ‘00’ : ‘30’) + ‘ ‘ + suffix });
-        }
-      });
-    }
-    if (slots.length === 0) {
-      slotsWrap.innerHTML = ‘<p class="text-sm text-[#4A5F2A]/55 py-1">No pickup slots available — we are now closed.</p>’;
-    } else {
-      slots.forEach(function (s) {
-        var btn = document.createElement(‘button’);
-        btn.type = ‘button’;
-        btn.className = ‘time-pill’;
-        btn.textContent = s.label;
-        btn.addEventListener(‘click’, function () {
-          document.querySelectorAll(‘.time-pill’).forEach(function (p) { p.classList.remove(‘selected’); });
-          btn.classList.add(‘selected’);
-          pickupHiddenIn.value = s.value;
-          document.getElementById(‘time-error’).classList.add(‘hidden’);
-        });
-        slotsWrap.appendChild(btn);
-      });
-    }
-
-    // ── Order summary ──────────────────────────────────────────────────────
-    var summaryList     = document.getElementById('summary-list');
-    var summaryEmpty    = document.getElementById('summary-empty');
-    var summaryTotalRow = document.getElementById('summary-total-row');
-    var summaryTotal    = document.getElementById('summary-total');
+    // ── Order summary (runs first, independent of slot logic) ─────────────
+    var summaryList     = document.getElementById(‘summary-list’);
+    var summaryEmpty    = document.getElementById(‘summary-empty’);
+    var summaryTotalRow = document.getElementById(‘summary-total-row’);
+    var summaryTotal    = document.getElementById(‘summary-total’);
 
     function renderSummary() {
       var items = getCart();
       if (items.length === 0) {
-        summaryList.innerHTML = '';
-        summaryEmpty.style.display = '';
-        summaryTotalRow.classList.add('hidden');
+        summaryList.innerHTML = ‘’;
+        summaryEmpty.style.display = ‘’;
+        summaryTotalRow.classList.add(‘hidden’);
       } else {
-        summaryEmpty.style.display = 'none';
-        summaryTotalRow.classList.remove('hidden');
-        summaryTotal.textContent = '$' + cartTotal(items).toFixed(0);
+        summaryEmpty.style.display = ‘none’;
+        summaryTotalRow.classList.remove(‘hidden’);
+        summaryTotal.textContent = ‘$’ + cartTotal(items).toFixed(0);
         summaryList.innerHTML = items.map(function (item) {
-          return '<li class="flex justify-between items-center text-sm gap-2">' +
-            '<span class="text-cream-light/85 flex-1">' + item.name +
-              (item.qty > 1 ? ' <span class="text-cream-light/40">&times;' + item.qty + '</span>' : '') +
-            '</span>' +
-            '<span class="font-display text-gold flex-shrink-0">$' + (item.price * item.qty).toFixed(0) + '</span>' +
-          '</li>';
-        }).join('');
+          return ‘<li class="flex justify-between items-center text-sm gap-2">’ +
+            ‘<span class="text-cream-light/85 flex-1">’ + item.name +
+              (item.qty > 1 ? ‘ <span class="text-cream-light/40">&times;’ + item.qty + ‘</span>’ : ‘’) +
+            ‘</span>’ +
+            ‘<span class="font-display text-gold flex-shrink-0">$’ + (item.price * item.qty).toFixed(0) + ‘</span>’ +
+          ‘</li>’;
+        }).join(‘’);
       }
     }
     renderSummary();
+
+    // ── Pickup time slots ──────────────────────────────────────────────────
+    try {
+      var slotsWrap      = document.getElementById(‘time-slots-wrap’);
+      var pickupHiddenIn = document.getElementById(‘pickup-time’);
+      if (!slotsWrap) throw new Error(‘time-slots-wrap not found’);
+      var now = new Date();
+      var currentHour = now.getHours(), currentMin = now.getMinutes();
+      var openHour = 8, closeHour = 19;
+      var slots = [];
+      for (var h = openHour; h < closeHour; h++) {
+        [0, 30].forEach(function (m) {
+          var slotMinutes = h * 60 + m;
+          var nowMinutes  = currentHour * 60 + currentMin + 25;
+          if (slotMinutes >= nowMinutes) {
+            var hDisp = h % 12 === 0 ? 12 : h % 12;
+            var suffix = h < 12 ? ‘AM’ : ‘PM’;
+            slots.push({ value: h + ‘:’ + (m === 0 ? ‘00’ : ‘30’), label: hDisp + ‘:’ + (m === 0 ? ‘00’ : ‘30’) + ‘ ‘ + suffix });
+          }
+        });
+      }
+      if (slots.length === 0) {
+        slotsWrap.innerHTML = ‘<p style="font-size:0.82rem;color:#4A5F2A;opacity:0.7;padding:4px 0;">No pickup slots available — we are now closed.</p>’;
+      } else {
+        slots.forEach(function (s) {
+          var btn = document.createElement(‘button’);
+          btn.type = ‘button’;
+          btn.className = ‘time-pill’;
+          btn.textContent = s.label;
+          btn.addEventListener(‘click’, function () {
+            document.querySelectorAll(‘.time-pill’).forEach(function (p) { p.classList.remove(‘selected’); });
+            btn.classList.add(‘selected’);
+            if (pickupHiddenIn) pickupHiddenIn.value = s.value;
+            var te = document.getElementById(‘time-error’);
+            if (te) te.classList.add(‘hidden’);
+          });
+          slotsWrap.appendChild(btn);
+        });
+      }
+    } catch (slotErr) {
+      console.error(‘Slot init error:’, slotErr);
+    }
 
     // ── Form submit ────────────────────────────────────────────────────────
     var form       = document.getElementById('checkout-form');
