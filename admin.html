@@ -51,6 +51,7 @@
       color: rgba(74,95,42,0.5);
       margin-bottom: 2rem;
     }
+    .gate-card input[type="email"],
     .gate-card input[type="password"] {
       width: 100%;
       padding: 0.7rem 1rem;
@@ -64,6 +65,7 @@
       margin-bottom: 0.75rem;
       transition: border-color 0.2s;
     }
+    .gate-card input[type="email"]:focus,
     .gate-card input[type="password"]:focus { border-color: #4A5F2A; }
     .gate-card button.gate-btn {
       width: 100%;
@@ -715,6 +717,7 @@
       <p class="gate-logo">Köri Studio</p>
       <p class="gate-sub">Menu Admin</p>
       <div class="gate-error" id="gate-error"></div>
+      <input type="email" id="gate-email" placeholder="Email" autocomplete="email" />
       <input type="password" id="gate-pw" placeholder="Password" autocomplete="current-password" />
       <button class="gate-btn" id="gate-submit">Sign In</button>
     </div>
@@ -865,8 +868,6 @@
   (function () {
     var SUPABASE_URL = 'https://xourjibposchcfnsttuv.supabase.co';
     var SUPABASE_KEY = 'sb_publishable_NppKXz3OXq5fsowbnQ4fTA_HrqS4HA1';
-    var ADMIN_PASSWORD = 'KoriMenu2026';
-    var AUTH_KEY = 'kori-admin-auth';
 
     var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -896,6 +897,7 @@
     /* ── Gate ──────────────────────────────────────────── */
     var gate = document.getElementById('gate');
     var admin = document.getElementById('admin');
+    var gateEmail = document.getElementById('gate-email');
     var gatePw = document.getElementById('gate-pw');
     var gateErr = document.getElementById('gate-error');
     var gateSubmit = document.getElementById('gate-submit');
@@ -911,29 +913,49 @@
       gate.style.display = 'flex';
       gatePw.value = '';
       gateErr.textContent = '';
+      gateSubmit.disabled = false;
+      gateSubmit.textContent = 'Sign In';
     }
 
-    if (sessionStorage.getItem(AUTH_KEY) === '1') {
-      showAdmin();
-    }
-
-    gateSubmit.addEventListener('click', function () {
-      if (gatePw.value === ADMIN_PASSWORD) {
-        sessionStorage.setItem(AUTH_KEY, '1');
-        gateErr.textContent = '';
+    // Restore session if Supabase still has a valid auth token
+    sb.auth.getSession().then(function (result) {
+      if (result.data && result.data.session) {
         showAdmin();
-      } else {
-        gateErr.textContent = 'Incorrect password. Try again.';
-        gatePw.value = '';
-        gatePw.focus();
       }
     });
+
+    gateSubmit.addEventListener('click', async function () {
+      var email = gateEmail.value.trim();
+      var password = gatePw.value;
+      if (!email || !password) {
+        gateErr.textContent = 'Enter your email and password.';
+        return;
+      }
+      gateErr.textContent = '';
+      gateSubmit.disabled = true;
+      gateSubmit.textContent = 'Signing in…';
+
+      var result = await sb.auth.signInWithPassword({ email: email, password: password });
+      if (result.error) {
+        gateErr.textContent = result.error.message || 'Incorrect credentials. Try again.';
+        gatePw.value = '';
+        gatePw.focus();
+        gateSubmit.disabled = false;
+        gateSubmit.textContent = 'Sign In';
+      } else {
+        showAdmin();
+      }
+    });
+
     gatePw.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') gateSubmit.click();
     });
+    gateEmail.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') gatePw.focus();
+    });
 
-    document.getElementById('logout-btn').addEventListener('click', function () {
-      sessionStorage.removeItem(AUTH_KEY);
+    document.getElementById('logout-btn').addEventListener('click', async function () {
+      await sb.auth.signOut();
       showGate();
     });
 
