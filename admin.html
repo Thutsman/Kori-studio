@@ -1273,8 +1273,7 @@
                '<button class="status-action-btn status-action-cancel" data-order-id="' + id + '" data-new-status="cancelled">Cancel</button>';
       }
       if (order.status === 'confirmed') {
-        return wa('confirmed', 'Notify') +
-               '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="preparing">Preparing</button>' +
+        return '<button class="status-action-btn" data-order-id="' + id + '" data-new-status="preparing">Preparing</button>' +
                '<button class="status-action-btn status-action-cancel" data-order-id="' + id + '" data-new-status="cancelled">Cancel</button>';
       }
       if (order.status === 'preparing') {
