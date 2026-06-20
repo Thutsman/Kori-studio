@@ -675,6 +675,28 @@
     .order-card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.4rem; }
     .order-card-total { font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 500; }
     .order-card-actions { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+
+    /* ── Photo upload ───────────────────────────────────────── */
+    .item-thumb { width:36px; height:36px; object-fit:cover; border-radius:3px; margin-right:0.45rem; vertical-align:middle; display:inline-block; flex-shrink:0; }
+    .photo-upload-zone {
+      border: 1.5px dashed rgba(74,95,42,0.28);
+      border-radius: 3px;
+      padding: 1.1rem 1rem;
+      text-align: center;
+      color: rgba(47,61,28,0.38);
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+      user-select: none;
+    }
+    .photo-upload-zone:hover { border-color: #4A5F2A; background: rgba(74,95,42,0.03); color: #4A5F2A; }
+    .photo-preview-img {
+      width: 100%; height: 160px; object-fit: cover;
+      border-radius: 3px; display: block;
+      border: 1px solid rgba(74,95,42,0.12);
+      margin-bottom: 0.5rem;
+    }
+    .photo-actions { display: flex; gap: 0.5rem; }
   </style>
 </head>
 <body>
@@ -813,6 +835,11 @@
           <div class="form-row-check">
             <input type="checkbox" id="f-available" checked />
             <label for="f-available">Available</label>
+          </div>
+          <div class="form-row">
+            <label>Photo</label>
+            <div id="photo-wrap"></div>
+            <input type="file" id="f-photo" accept="image/jpeg,image/png,image/webp" style="display:none" />
           </div>
         </form>
       </div>
@@ -1000,7 +1027,7 @@
         '<tbody>' +
         items.map(function (item) {
           return '<tr data-id="' + esc(item.id) + '">' +
-            '<td class="td-name">' + esc(item.name) + '</td>' +
+            '<td class="td-name">' + (item.image_url ? '<img class="item-thumb" src="' + esc(item.image_url) + '" alt="" />' : '') + esc(item.name) + '</td>' +
             '<td class="td-desc">' + esc(item.description || '') + '</td>' +
             '<td class="td-price">' + (item.price != null ? '$' + parseFloat(item.price).toFixed(2) : '—') + '</td>' +
             '<td><label class="toggle toggle-wrap"><input type="checkbox" class="avail-toggle" data-id="' + esc(item.id) + '" ' + (item.available ? 'checked' : '') + ' /><span class="toggle-slider"></span></label></td>' +
@@ -1329,6 +1356,54 @@
       refreshOrdersQuietly();
     }
 
+    /* ── Photo upload ──────────────────────────────────── */
+    var fCurrentFile     = null;
+    var fCurrentImageUrl = null;
+    var fRemovePhoto     = false;
+
+    function renderPhotoWidget(url) {
+      var wrap = document.getElementById('photo-wrap');
+      if (!url) {
+        wrap.innerHTML = '<div class="photo-upload-zone" id="photo-zone">' +
+          '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin:0 auto 0.35rem;display:block;opacity:0.4"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>' +
+          'Click to add a photo</div>';
+        document.getElementById('photo-zone').addEventListener('click', function () {
+          document.getElementById('f-photo').click();
+        });
+      } else {
+        wrap.innerHTML = '<img class="photo-preview-img" src="' + esc(url) + '" alt="Preview" />' +
+          '<div class="photo-actions">' +
+            '<button type="button" class="action-btn edit-btn" id="photo-change-btn">Change</button>' +
+            '<button type="button" class="action-btn delete-btn" id="photo-remove-btn">Remove Photo</button>' +
+          '</div>';
+        document.getElementById('photo-change-btn').addEventListener('click', function () {
+          document.getElementById('f-photo').click();
+        });
+        document.getElementById('photo-remove-btn').addEventListener('click', function () {
+          fRemovePhoto = true;
+          fCurrentFile = null;
+          renderPhotoWidget(null);
+        });
+      }
+    }
+
+    function resetPhotoState() {
+      fCurrentFile = null; fCurrentImageUrl = null; fRemovePhoto = false;
+      renderPhotoWidget(null);
+    }
+
+    document.getElementById('f-photo').addEventListener('change', function (e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) { toast('Photo must be under 5 MB', 'error'); return; }
+      fCurrentFile = file;
+      fRemovePhoto = false;
+      var reader = new FileReader();
+      reader.onload = function (ev) { renderPhotoWidget(ev.target.result); };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+
     /* ── Modal ─────────────────────────────────────────── */
     var modalOverlay = document.getElementById('modal-overlay');
     var modalTitle   = document.getElementById('modal-title');
@@ -1354,6 +1429,7 @@
       fPillGroup.value = '';
       fSubcat.value = '';
       fAvailable.checked = true;
+      resetPhotoState();
       saveBtn.disabled = false;
       saveBtn.textContent = 'Save Item';
       modalOverlay.classList.add('open');
@@ -1371,6 +1447,10 @@
       fPillGroup.value = item.pill_group || '';
       fSubcat.value = item.subcategory || '';
       fAvailable.checked = item.available !== false;
+      fCurrentFile = null;
+      fRemovePhoto = false;
+      fCurrentImageUrl = item.image_url || null;
+      renderPhotoWidget(item.image_url || null);
       saveBtn.disabled = false;
       saveBtn.textContent = 'Save Item';
       modalOverlay.classList.add('open');
@@ -1400,6 +1480,32 @@
       saveBtn.disabled = true;
       saveBtn.textContent = 'Saving…';
 
+      // Resolve image URL before saving
+      var imageUrl = fCurrentImageUrl;
+      if (fRemovePhoto) {
+        if (fCurrentImageUrl) {
+          var oldSeg = fCurrentImageUrl.split('/menu-images/')[1];
+          if (oldSeg) sb.storage.from('menu-images').remove([oldSeg]);
+        }
+        imageUrl = null;
+      } else if (fCurrentFile) {
+        saveBtn.textContent = 'Uploading photo…';
+        var ext = (fCurrentFile.name.split('.').pop() || 'jpg').toLowerCase();
+        var fname = Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+        var upRes = await sb.storage.from('menu-images').upload(fname, fCurrentFile, { contentType: fCurrentFile.type });
+        if (upRes.error) {
+          toast('Photo upload failed: ' + upRes.error.message, 'error');
+          saveBtn.disabled = false; saveBtn.textContent = 'Save Item';
+          return;
+        }
+        if (fCurrentImageUrl) {
+          var oldSeg2 = fCurrentImageUrl.split('/menu-images/')[1];
+          if (oldSeg2) sb.storage.from('menu-images').remove([oldSeg2]);
+        }
+        imageUrl = sb.storage.from('menu-images').getPublicUrl(fname).data.publicUrl;
+        saveBtn.textContent = 'Saving…';
+      }
+
       var payload = {
         category_slug: currentCatSlug,
         name: name,
@@ -1409,7 +1515,8 @@
         pill_group: fPillGroup.value.trim() || null,
         subcategory: fSubcat.value.trim() || null,
         available: fAvailable.checked,
-        sort_order: fSort.value !== '' ? parseInt(fSort.value, 10) : 0
+        sort_order: fSort.value !== '' ? parseInt(fSort.value, 10) : 0,
+        image_url: imageUrl
       };
 
       var id = fId.value.trim();

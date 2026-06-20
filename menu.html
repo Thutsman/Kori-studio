@@ -91,6 +91,7 @@
     .mi-desc { font-size: 0.73rem; color: rgba(47, 61, 28, 0.55); line-height: 1.65; }
     .mi-price-wrap { display: flex; align-items: center; gap: 0.65rem; flex-shrink: 0; padding-top: 0.1rem; }
     .mi-price { font-family: 'Cinzel', Georgia, serif; color: #2F3D1C; font-size: 0.9rem; white-space: nowrap; }
+    .mi-photo { width:100%; height:180px; object-fit:cover; border-radius:4px; display:block; margin-bottom:0.75rem; }
 
     /* ── Compact drink rows ───────────────────────────────────────────────── */
     .drink-item {
@@ -497,6 +498,7 @@
 
     function renderStandard(item, catName) {
       return '<div class="menu-item">' +
+        (item.image_url ? '<img class="mi-photo" src="' + esc(item.image_url) + '" alt="' + esc(item.name) + '" loading="lazy" />' : '') +
         '<div class="flex items-start justify-between gap-4">' +
         '<div class="flex-1"><p class="mi-name">' + esc(item.name) + '</p>' +
         (item.description ? '<p class="mi-desc">' + esc(item.description) + '</p>' : '') +
