@@ -1150,8 +1150,12 @@
     function renderAnalytics(orders) {
       var todayStr = new Date().toDateString();
       var todayOrders = orders.filter(function (o) { return new Date(o.created_at).toDateString() === todayStr; });
-      var revenue = todayOrders
-        .filter(function (o) { return o.status === 'collected'; })
+      // Revenue counts orders collected today (by updated_at — when cash was actually paid)
+      var revenue = orders
+        .filter(function (o) {
+          return o.status === 'collected' &&
+                 new Date(o.updated_at || o.created_at).toDateString() === todayStr;
+        })
         .reduce(function (s, o) { return s + parseFloat(o.total || 0); }, 0);
       var active = orders.filter(function (o) { return ['new','confirmed','preparing'].indexOf(o.status) !== -1; }).length;
       var ready  = orders.filter(function (o) { return o.status === 'ready'; }).length;
