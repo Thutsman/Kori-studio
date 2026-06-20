@@ -644,6 +644,37 @@
       margin-right: 0.3rem;
     }
     .wa-notify-btn:hover { background: #25D366; color: #fff; border-color: #25D366; }
+
+    /* ── Orders: desktop table scrolls, mobile shows cards ──── */
+    #orders-wrap { overflow: visible; background: none; border: none; }
+    .orders-table-inner { overflow-x: auto; -webkit-overflow-scrolling: touch; background: #fff; border: 1px solid rgba(74,95,42,0.12); border-radius: 4px; }
+    .orders-table-inner table { min-width: 720px; }
+    .orders-mobile { display: none; }
+    @media (max-width: 699px) {
+      .orders-desktop { display: none; }
+      .orders-mobile  { display: block; }
+    }
+    .order-card {
+      background: #fff;
+      border: 1px solid rgba(74,95,42,0.12);
+      border-radius: 4px;
+      padding: 0.85rem 0.95rem;
+      margin-bottom: 0.55rem;
+    }
+    .order-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 0.3rem;
+    }
+    .order-card-name { font-weight: 600; font-size: 0.88rem; }
+    .order-card-ref  { font-family: 'Cinzel', serif; font-size: 0.67rem; color: rgba(47,61,28,0.45); margin-top: 0.08rem; }
+    .order-card-meta { font-size: 0.71rem; color: rgba(47,61,28,0.5); margin-bottom: 0.35rem; line-height: 1.5; }
+    .order-card-items { font-size: 0.74rem; color: rgba(47,61,28,0.55); margin-bottom: 0.5rem; border-top: 1px solid rgba(74,95,42,0.08); padding-top: 0.4rem; }
+    .order-card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.4rem; }
+    .order-card-total { font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 500; }
+    .order-card-actions { display: flex; gap: 0.3rem; flex-wrap: wrap; }
   </style>
 </head>
 <body>
@@ -693,7 +724,7 @@
             <div class="analytics-value" id="stat-today">—</div>
           </div>
           <div class="analytics-card">
-            <div class="analytics-label">Today's Revenue</div>
+            <div class="analytics-label">Revenue (Collected)</div>
             <div class="analytics-value green" id="stat-revenue">—</div>
           </div>
           <div class="analytics-card">
@@ -1120,7 +1151,7 @@
       var todayStr = new Date().toDateString();
       var todayOrders = orders.filter(function (o) { return new Date(o.created_at).toDateString() === todayStr; });
       var revenue = todayOrders
-        .filter(function (o) { return o.status !== 'cancelled'; })
+        .filter(function (o) { return o.status === 'collected'; })
         .reduce(function (s, o) { return s + parseFloat(o.total || 0); }, 0);
       var active = orders.filter(function (o) { return ['new','confirmed','preparing'].indexOf(o.status) !== -1; }).length;
       var ready  = orders.filter(function (o) { return o.status === 'ready'; }).length;
@@ -1146,41 +1177,76 @@
     function renderOrdersTable(orders) {
       var wrap = document.getElementById('orders-wrap');
       if (orders.length === 0) {
-        wrap.innerHTML = '<div class="empty-state">No orders match this filter.</div>';
+        wrap.innerHTML = '<div class="empty-state" style="background:#fff;border:1px solid rgba(74,95,42,0.12);border-radius:4px;">No orders match this filter.</div>';
         return;
       }
-      wrap.innerHTML = '<table>' +
-        '<thead><tr>' +
-        '<th>Time</th><th>Order #</th><th>Customer</th><th>Phone</th>' +
+
+      // Pre-compute per-order display data
+      var rows = orders.map(function (order) {
+        var dt = new Date(order.created_at);
+        var timeStr = dt.toLocaleTimeString('en-ZW', { hour: '2-digit', minute: '2-digit' });
+        var dateStr = dt.toLocaleDateString('en-ZW', { day: 'numeric', month: 'short' });
+        var items = Array.isArray(order.items) ? order.items : [];
+        var summary = items.map(function (i) { return (i.qty || 1) + '× ' + i.name; }).join(', ');
+        var summaryShort = summary.length > 50 ? summary.slice(0, 47) + '…' : summary;
+        var totalStr = '$' + parseFloat(order.total || 0).toFixed(2);
+        var badge = '<span class="status-badge status-' + esc(order.status) + '">' + esc(order.status) + '</span>';
+        var actions = getStatusActions(order);
+        return { o: order, timeStr: timeStr, dateStr: dateStr, summary: summary, summaryShort: summaryShort, totalStr: totalStr, badge: badge, actions: actions };
+      });
+
+      // Desktop: scrollable table
+      var desktopHtml = '<div class="orders-desktop"><div class="orders-table-inner"><table>' +
+        '<thead><tr><th>Time</th><th>Order #</th><th>Customer</th><th>Phone</th>' +
         '<th>Items</th><th>Total</th><th>Pickup</th><th>Status</th><th>Actions</th>' +
         '</tr></thead><tbody>' +
-        orders.map(function (order) {
-          var dt = new Date(order.created_at);
-          var timeStr = dt.toLocaleTimeString('en-ZW', { hour: '2-digit', minute: '2-digit' });
-          var dateStr = dt.toLocaleDateString('en-ZW', { day: 'numeric', month: 'short' });
-          var items = Array.isArray(order.items) ? order.items : [];
-          var summary = items.map(function (i) { return (i.qty || 1) + '× ' + i.name; }).join(', ');
-          var summaryShort = summary.length > 50 ? summary.slice(0, 47) + '…' : summary;
-          var statusBadge = '<span class="status-badge status-' + esc(order.status) + '">' + esc(order.status) + '</span>';
-          var actions = getStatusActions(order);
-          return '<tr data-order-id="' + esc(order.id) + '">' +
-            '<td style="white-space:nowrap;font-size:0.78rem;">' + esc(timeStr) + '<br><span style="font-size:0.67rem;color:rgba(47,61,28,0.4)">' + esc(dateStr) + '</span></td>' +
-            '<td style="font-family:\'Cinzel\',serif;font-size:0.75rem;white-space:nowrap;">' + esc(order.id) + '</td>' +
-            '<td style="font-weight:500;white-space:nowrap;">' + esc(order.customer_name) + '</td>' +
-            '<td style="font-size:0.78rem;white-space:nowrap;">' + esc(order.customer_phone) + '</td>' +
-            '<td class="order-items-cell" title="' + esc(summary) + '">' + esc(summaryShort) + '</td>' +
-            '<td style="font-family:\'Cinzel\',serif;white-space:nowrap;">$' + parseFloat(order.total || 0).toFixed(2) + '</td>' +
-            '<td style="white-space:nowrap;font-size:0.78rem;">' + esc(order.pickup_time || '—') + '</td>' +
-            '<td>' + statusBadge + '</td>' +
-            '<td class="td-actions"><span class="actions-wrap">' + actions + '</span></td>' +
+        rows.map(function (r) {
+          return '<tr data-order-id="' + esc(r.o.id) + '">' +
+            '<td style="white-space:nowrap;font-size:0.78rem;">' + esc(r.timeStr) + '<br><span style="font-size:0.67rem;color:rgba(47,61,28,0.4)">' + esc(r.dateStr) + '</span></td>' +
+            '<td style="font-family:\'Cinzel\',serif;font-size:0.75rem;white-space:nowrap;">' + esc(r.o.id) + '</td>' +
+            '<td style="font-weight:500;white-space:nowrap;">' + esc(r.o.customer_name) + '</td>' +
+            '<td style="font-size:0.78rem;white-space:nowrap;">' + esc(r.o.customer_phone) + '</td>' +
+            '<td class="order-items-cell" title="' + esc(r.summary) + '">' + esc(r.summaryShort) + '</td>' +
+            '<td style="font-family:\'Cinzel\',serif;white-space:nowrap;">' + r.totalStr + '</td>' +
+            '<td style="white-space:nowrap;font-size:0.78rem;">' + esc(r.o.pickup_time || '—') + '</td>' +
+            '<td>' + r.badge + '</td>' +
+            '<td class="td-actions"><span class="actions-wrap">' + r.actions + '</span></td>' +
             '</tr>';
         }).join('') +
-        '</tbody></table>';
+        '</tbody></table></div></div>';
+
+      // Mobile: card layout — all info visible, action buttons front and centre
+      var mobileHtml = '<div class="orders-mobile">' +
+        rows.map(function (r) {
+          var phone = (r.o.customer_phone || '').replace(/\D/g, '');
+          return '<div class="order-card">' +
+            '<div class="order-card-top">' +
+              '<div>' +
+                '<div class="order-card-name">' + esc(r.o.customer_name) + '</div>' +
+                '<div class="order-card-ref">' + esc(r.o.id) + '</div>' +
+              '</div>' +
+              r.badge +
+            '</div>' +
+            '<div class="order-card-meta">' +
+              esc(r.timeStr) + ' &middot; ' + esc(r.dateStr) +
+              ' &middot; Pickup <strong>' + esc(r.o.pickup_time || '—') + '</strong>' +
+              '<br><a href="tel:+' + esc(phone) + '" style="color:#4A5F2A;text-decoration:none;">' + esc(r.o.customer_phone) + '</a>' +
+            '</div>' +
+            '<div class="order-card-items">' + esc(r.summaryShort) + '</div>' +
+            '<div class="order-card-footer">' +
+              '<span class="order-card-total">' + r.totalStr + '</span>' +
+              '<div class="order-card-actions">' + r.actions + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('') +
+        '</div>';
+
+      wrap.innerHTML = desktopHtml + mobileHtml;
 
       wrap.querySelectorAll('.status-action-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var order = allOrders.find(function (o) { return o.id === btn.dataset.orderId; });
-          updateOrderStatus(order, btn.dataset.newStatus);
+          if (order) updateOrderStatus(order, btn.dataset.newStatus);
         });
       });
       wrap.querySelectorAll('.wa-notify-btn').forEach(function (btn) {
