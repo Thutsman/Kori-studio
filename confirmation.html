@@ -176,7 +176,7 @@
 
     <p class="text-center text-xs text-[#4A5F2A]/50 mt-8 leading-relaxed">
       Kori Studio · 16 Francis Warren, Ilanda, Bulawayo<br>
-      Open daily 8 AM – 9 PM
+      Open daily 8 AM – 7 PM
     </p>
 
   </main>
@@ -204,14 +204,14 @@
           '<span class="text-cream-light/85 flex-1">' + item.name +
             (item.qty > 1 ? ' <span class="text-cream-light/40">&times;' + item.qty + '</span>' : '') +
           '</span>' +
-          '<span class="font-display text-gold flex-shrink-0">$' + (item.price * item.qty).toFixed(0) + '</span>' +
+          '<span class="font-display text-gold flex-shrink-0">$' + (item.price * item.qty).toFixed(2) + '</span>' +
         '</li>';
       }).join('');
     }
 
     // Total
     var totalEl = document.getElementById('conf-total');
-    if (totalEl) totalEl.textContent = '$' + (order.total || 0).toFixed(0);
+    if (totalEl) totalEl.textContent = '$' + (order.total || 0).toFixed(2);
 
     // Pickup
     var pickupEl = document.getElementById('conf-pickup');
@@ -232,11 +232,11 @@
     var waLink = document.getElementById('whatsapp-link');
     if (waLink && order) {
       var itemsText = (order.items || []).map(function (i) {
-        return i.qty + 'x ' + i.name + ' ($' + (i.price * i.qty).toFixed(0) + ')';
+        return i.qty + 'x ' + i.name + ' ($' + (i.price * i.qty).toFixed(2) + ')';
       }).join(', ');
       var msg = 'Hi Kori Studio! I just placed order ' + order.id + '.\n' +
                 'Items: ' + itemsText + '\n' +
-                'Total: $' + (order.total || 0).toFixed(0) + '\n' +
+                'Total: $' + (order.total || 0).toFixed(2) + '\n' +
                 'My name: ' + (order.name || '') + '\n' +
                 'Pickup time: ' + (order.pickup || '') + '\n' +
                 (order.notes ? 'Notes: ' + order.notes : '');

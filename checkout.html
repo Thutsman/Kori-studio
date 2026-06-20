@@ -229,13 +229,13 @@
       } else {
         summaryEmpty.style.display = ‘none’;
         summaryTotalRow.classList.remove(‘hidden’);
-        summaryTotal.textContent = ‘$’ + cartTotal(items).toFixed(0);
+        summaryTotal.textContent = ‘$’ + cartTotal(items).toFixed(2);
         summaryList.innerHTML = items.map(function (item) {
           return ‘<li class="flex justify-between items-center text-sm gap-2">’ +
             ‘<span class="text-cream-light/85 flex-1">’ + item.name +
               (item.qty > 1 ? ‘ <span class="text-cream-light/40">&times;’ + item.qty + ‘</span>’ : ‘’) +
             ‘</span>’ +
-            ‘<span class="font-display text-gold flex-shrink-0">$’ + (item.price * item.qty).toFixed(0) + ‘</span>’ +
+            ‘<span class="font-display text-gold flex-shrink-0">$’ + (item.price * item.qty).toFixed(2) + ‘</span>’ +
           ‘</li>’;
         }).join(‘’);
       }
@@ -317,7 +317,10 @@
         formErr.textContent = 'Your order is empty. Add items from the menu first.';
         showError(formErr); valid = false;
       }
-      if (!valid) { showError(formErr); return; }
+      if (!valid) {
+        if (items.length > 0) showError(formErr);
+        return;
+      }
 
       submitBtn.textContent = 'Placing order…';
       submitBtn.disabled = true;
@@ -364,7 +367,11 @@
         '💰 *Total: $' + total.toFixed(2) + '*' +
         (notes ? '\n\n📝 Notes: ' + notes : '');
 
-      // Save to Supabase (with 5 s timeout), then open WhatsApp + redirect
+      // Open WhatsApp synchronously while still in the user-gesture context,
+      // before any async work — browsers block window.open() in Promise callbacks.
+      window.open('https://wa.me/' + KORI_WA + '?text=' + encodeURIComponent(waMsg), '_blank');
+
+      // Save to Supabase (with 5 s timeout), then redirect regardless of outcome
       var dbSave = sb
         ? sb.from('kori_orders').insert({
             id:             orderNumber,
@@ -382,7 +389,6 @@
         dbSave,
         new Promise(function (resolve) { setTimeout(resolve, 5000); })
       ]).catch(function () {}).finally(function () {
-        window.open('https://wa.me/' + KORI_WA + '?text=' + encodeURIComponent(waMsg), '_blank');
         window.location.href = 'confirmation.html';
       });
     });
