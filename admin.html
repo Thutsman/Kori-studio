@@ -875,7 +875,12 @@
     // After signing in, sb sends an authenticated JWT; rows from anon-only policies are
     // invisible to authenticated users. sbPublic bypasses that for safe public reads.
     var sbPublic = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+        storageKey: 'kori-public-anon'
+      }
     });
 
     /* ── Utilities ─────────────────────────────────────── */
